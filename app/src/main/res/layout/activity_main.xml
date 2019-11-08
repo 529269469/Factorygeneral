@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/color_FFFFFF"
+    android:id="@+id/drawerlayout_drawer"
+    tools:context=".activity.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="#2D7DF4">
+
+                <ImageView
+                    android:id="@+id/iv_genduo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:padding="8dp"
+                    android:src="@drawable/genduo" />
+
+                <TextView
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/iv_genduo"
+                    android:textSize="@dimen/text_font_20"
+                    android:id="@+id/tv_tuichu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#fff"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/padding_50"
+                    android:id="@+id/tv_operation"
+                    android:gravity="center"
+                    android:textColor="@color/color_FFFFFF"
+                    android:text="操作"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <ImageView
+                    android:layout_marginRight="@dimen/padding_10"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/tv_operation"
+                    android:src="@drawable/caozuo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </RelativeLayout>
+
+
+            <FrameLayout
+                android:id="@+id/frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </LinearLayout>
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/help_loading"
+            android:background="#7e000000"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.example.factorygeneral.loding.LoadingView
+                style="@style/CustomProgressBar_Small"
+                android:layout_width="@dimen/padding_100"
+                android:layout_height="@dimen/padding_100"
+                android:layout_centerInParent="true"
+                android:visibility="visible"/>
+        </RelativeLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_gravity="left"
+        android:id="@+id/ll_title"
+        android:orientation="vertical"
+        android:layout_width="@dimen/padding_200"
+        android:layout_height="match_parent">
+        <TextView
+            android:textSize="@dimen/padding_20"
+            android:textColor="@color/color_FFFFFF"
+            android:gravity="center"
+            android:text="菜单"
+            android:background="#212D4D"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/padding_44"/>
+        <ListView
+            android:layout_weight="1"
+            android:divider="#00000000"
+            android:background="@color/color_FFFFFF"
+            android:id="@+id/gv_one"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"/>
+        <TextView
+            android:id="@+id/tv_daochu"
+            android:textSize="@dimen/padding_20"
+            android:textColor="@color/color_FFFFFF"
+            android:gravity="center"
+            android:text="设置"
+            android:background="@color/color_5398F7"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/padding_44"/>
+
+    </LinearLayout>
+
+
+
+</androidx.drawerlayout.widget.DrawerLayout>

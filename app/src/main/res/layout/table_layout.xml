@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:paddingRight="@dimen/padding_16"
+        android:paddingLeft="@dimen/padding_16"
+        android:textColor="@color/color_5398F7"
+        android:background="@drawable/shape_text"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/padding_16"
+        android:id="@+id/tv_label"
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/padding_36"/>
+
+    <com.example.factorygeneral.view.LineGridView
+        android:layout_marginTop="@dimen/padding_5"
+        android:background="@drawable/shape_table"
+        android:id="@+id/gv_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <View
+        android:layout_marginTop="@dimen/padding_20"
+        android:background="@color/color_333333"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/padding_1"/>
+
+</LinearLayout>

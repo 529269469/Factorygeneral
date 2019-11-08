@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.main.HomeFragment">
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/padding_40">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tb"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+        <ImageView
+            android:id="@+id/iv_add"
+            android:src="@drawable/add"
+            android:layout_marginLeft="@dimen/padding_20"
+            android:layout_width="@dimen/padding_20"
+            android:layout_height="@dimen/padding_20"/>
+
+        <ImageView
+            android:id="@+id/iv_up"
+            android:src="@drawable/updata"
+            android:layout_marginLeft="@dimen/padding_10"
+            android:layout_width="@dimen/padding_20"
+            android:layout_height="@dimen/padding_20"/>
+
+        <ImageView
+            android:id="@+id/iv_del"
+            android:src="@drawable/del"
+            android:layout_marginLeft="@dimen/padding_10"
+            android:layout_width="@dimen/padding_20"
+            android:layout_height="@dimen/padding_20"/>
+    </LinearLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

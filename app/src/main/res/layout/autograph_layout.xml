@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/ll_checkPerson"
+        android:layout_marginRight="@dimen/padding_24"
+        android:layout_marginLeft="@dimen/padding_24"
+        android:layout_marginTop="@dimen/padding_20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_label"
+            android:textColor="@color/color_333333"
+            android:text="检查人签名"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:background="@drawable/shape_ed"
+            android:layout_marginLeft="@dimen/padding_10"
+            android:scaleType="fitXY"
+            android:id="@+id/iv_autograph"
+            android:layout_width="@dimen/padding_300"
+            android:layout_height="@dimen/padding_90" />
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_marginTop="@dimen/padding_20"
+        android:background="@color/color_333333"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/padding_1"/>
+</LinearLayout>

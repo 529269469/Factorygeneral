@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_FFFFFF"
+    tools:context=".activity.ToActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="#2D7DF4">
+
+            <ImageView
+                android:id="@+id/iv_genduo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="8dp"
+                android:src="@drawable/left" />
+
+            <TextView
+                android:id="@+id/tv_tuichu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/iv_genduo"
+                android:text="数据包列表"
+                android:textColor="#fff"
+                android:textSize="@dimen/text_font_20"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/padding_40"
+            android:layout_marginLeft="@dimen/padding_24"
+            android:layout_marginTop="@dimen/padding_24"
+            android:layout_marginRight="@dimen/padding_24"
+            android:background="#EDF4FF"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/padding_0"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="序号"
+                android:textColor="#999999" />
+
+
+            <TextView
+                android:layout_width="@dimen/padding_0"
+                android:layout_height="match_parent"
+                android:layout_weight="6"
+                android:gravity="center"
+                android:text="名称"
+                android:textColor="#999999" />
+
+            <TextView
+                android:layout_width="@dimen/padding_0"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="状态"
+                android:textColor="#999999" />
+        </LinearLayout>
+
+
+        <com.example.factorygeneral.view.MyListView
+            android:id="@+id/lv_checklist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/padding_24"
+            android:layout_marginRight="@dimen/padding_24"
+            android:layout_marginBottom="@dimen/padding_100"
+            android:background="@drawable/shape_ed" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/help_center_loading_prgbar"
+        android:background="#7e000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.example.factorygeneral.loding.LoadingView
+            style="@style/CustomProgressBar_Small"
+            android:layout_width="@dimen/padding_100"
+            android:layout_height="@dimen/padding_100"
+            android:layout_centerInParent="true"
+            android:visibility="visible"/>
+    </RelativeLayout>
+
+</RelativeLayout>
