@@ -34,6 +34,7 @@ import com.example.factorygeneral.greendao.bean.UnitListBean;
 import com.example.factorygeneral.greendao.db.UnitListBeanDao;
 import com.example.factorygeneral.utils.FileUtils;
 import com.example.factorygeneral.utils.SPUtils;
+import com.example.factorygeneral.utils.ScreenUtils;
 import com.example.factorygeneral.utils.StringUtils;
 import com.example.factorygeneral.utils.ToastUtils;
 import com.example.factorygeneral.view.MyGridView;
@@ -44,6 +45,7 @@ import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 
@@ -158,7 +160,6 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
     private void popuView(View operationView) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.operation_view, null);
         PopupWindow popupWindow = new PopupWindow(view);
-//        popupWindow.setContentView(view);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
@@ -167,7 +168,10 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
         lp.alpha = 0.7f;
         getActivity().getWindow().setAttributes(lp);
-        popupWindow.showAsDropDown(operationView);
+        int windowPos[] = calculatePopWindowPos(operationView, view);
+
+
+        popupWindow.showAtLocation(operationView, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
         popupWindow.setOnDismissListener(() -> {
             WindowManager.LayoutParams lp1 = getActivity().getWindow().getAttributes();
             lp1.alpha = 1f;
@@ -300,7 +304,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         gv_table.setAdapter(gridAdapter);
 
         /**
-         * 删除文件，不清理
+         * 删除文件，不清理，保存时再删除文件
          * */
         gridAdapter.setOnDel(position1 -> {
             gridList.remove(position1);
@@ -352,7 +356,25 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
             StringBuffer relevantFileBuffer = new StringBuffer();
             for (int i = 0; i < gridList.size(); i++) {
-                relevantFileBuffer.append(gridList.get(i).getLabel()).append("@%%%@").append(gridList.get(i).getText()).append(",");
+                if (gridList.get(i).getText().indexOf("/storage/emulated")!=-1){
+                    String end = gridList.get(i).getText().substring(gridList.get(i).getText().lastIndexOf(".") + 1
+                            , gridList.get(i).getText().length()).toLowerCase(Locale.getDefault());
+                    String upLoadFileName = System.currentTimeMillis()+"."+end;
+
+                    FileUtils.copyFile(gridList.get(i).getText(),
+                            (String) SPUtils.get(getActivity(), "PackagePath", "")+File.separator+upLoadFileName);
+                    relevantFileBuffer
+                            .append(gridList.get(i).getLabel()).append("@%%%@")
+                            .append(upLoadFileName)
+                            .append(",");
+                }else {
+                    relevantFileBuffer
+                            .append(gridList.get(i).getLabel()).append("@%%%@")
+                            .append(gridList.get(i).getText())
+                            .append(",");
+                }
+
+
             }
             String relevantFile="";
             if (!StringUtils.isBlank(relevantFileBuffer.toString())){
@@ -393,7 +415,11 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                     if (path != null) {
                         File file = new File(path);
                         if (file.exists()) {
-                            String upLoadFileName = file.getName();
+                            String end = file.getName().substring(file.getName().lastIndexOf(".") + 1, file.getName().length()).toLowerCase(Locale.getDefault());
+                            String upLoadFileName = System.currentTimeMillis()+"."+end;
+                            FileUtils.copyFile(file.getPath(),
+                                    (String) SPUtils.get(getActivity(), "PackagePath", "")+File.separator+upLoadFileName);
+
                             UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
                             List<UnitListBean> unitListBeanList = unitListBeanDao.queryBuilder()
                                     .where(UnitListBeanDao.Properties.Uuid.eq((String) SPUtils.get(getActivity(), "uuId", "")))
@@ -401,9 +427,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                                     .list();
                             String files = "";
                             if (StringUtils.isBlank(unitListBeanList.get(0).getRelevantFile())) {
-                                files = upLoadFileName + "@%%%@" + upLoadFileName;
+                                files = file.getName() + "@%%%@" + upLoadFileName;
                             } else {
-                                files = unitListBeanList.get(0).getRelevantFile() + "," + upLoadFileName + "@%%%@" + upLoadFileName;
+                                files = unitListBeanList.get(0).getRelevantFile() + "," + file.getName() + "@%%%@" + upLoadFileName;
                             }
                             UnitListBean unitListBean1 = new UnitListBean(unitListBeanList.get(0).getUId(),
                                     unitListBeanList.get(0).getUuid(),
@@ -464,10 +490,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                     if (path != null) {
                         File file = new File(path);
                         if (file.exists()) {
-                            String upLoadFileName = file.getName();
                             TextLabelBean textLabelBean=new TextLabelBean();
-                            textLabelBean.setText(upLoadFileName);
-                            textLabelBean.setLabel(upLoadFileName);
+                            textLabelBean.setText(file.getPath());
+                            textLabelBean.setLabel(file.getName());
                             gridList.add(textLabelBean);
                             gridAdapter.notifyDataSetChanged();
                         }
@@ -489,4 +514,37 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         }
 
     }
+
+    /**
+     * 计算出来的位置，y方向就在anchorView的上面和下面对齐显示，x方向就是与屏幕右边对齐显示
+     * 如果anchorView的位置有变化，就可以适当自己额外加入偏移来修正
+     * @param anchorView  呼出window的view
+     * @param contentView   window的内容布局
+     * @return window显示的左上角的xOff,yOff坐标
+     */
+    private static int[] calculatePopWindowPos(final View anchorView, final View contentView) {
+        final int windowPos[] = new int[2];
+        final int anchorLoc[] = new int[2];
+        // 获取锚点View在屏幕上的左上角坐标位置
+        anchorView.getLocationOnScreen(anchorLoc);
+        final int anchorHeight = anchorView.getHeight();
+        // 获取屏幕的高宽
+        final int screenHeight = ScreenUtils.getScreenHeight(anchorView.getContext());
+        final int screenWidth = ScreenUtils.getScreenWidth(anchorView.getContext());
+        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        // 计算contentView的高宽
+        final int windowHeight = contentView.getMeasuredHeight();
+        final int windowWidth = contentView.getMeasuredWidth();
+        // 判断需要向上弹出还是向下弹出显示
+        final boolean isNeedShowUp = (screenHeight - anchorLoc[1] - anchorHeight < windowHeight);
+        if (isNeedShowUp) {
+            windowPos[0] = screenWidth - windowWidth;
+            windowPos[1] = anchorLoc[1] - windowHeight;
+        } else {
+            windowPos[0] = screenWidth - windowWidth;
+            windowPos[1] = anchorLoc[1] + anchorHeight;
+        }
+        return windowPos;
+    }
+
 }

@@ -212,11 +212,11 @@ public class NewActivity extends BaseActivity implements View.OnClickListener {
         HttpUtils.getInstance().post(URLS.USERNAME, map, new MyCallBack<FindFilesBean>() {
             @Override
             public void onSuccess(FindFilesBean findFilesBean) {
+                list.clear();
                 if (findFilesBean.getData() != null && !findFilesBean.getData().isEmpty()) {
-                    list.clear();
                     list.addAll(findFilesBean.getData());
-                    downloadAdapter.notifyDataSetChanged();
                 }
+                downloadAdapter.notifyDataSetChanged();
             }
 
             @Override

@@ -4,30 +4,32 @@
     android:layout_height="match_parent">
 
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/ll_checkPerson"
-        android:layout_marginRight="@dimen/padding_24"
-        android:layout_marginLeft="@dimen/padding_24"
-        android:layout_marginTop="@dimen/padding_20"
+        android:layout_marginTop="@dimen/padding_10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:background="@drawable/shape_gray_square_bg"
+            android:layout_marginRight="500dp"
+            android:scaleType="fitXY"
+            android:id="@+id/iv_autograph"
+            android:layout_width="@dimen/padding_200"
+            android:layout_height="@dimen/padding_100" />
+
         <TextView
+            android:layout_marginRight="@dimen/padding_10"
+            android:layout_toLeftOf="@id/iv_autograph"
             android:id="@+id/tv_label"
             android:textColor="@color/color_333333"
             android:text="检查人签名"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <ImageView
-            android:background="@drawable/shape_ed"
-            android:layout_marginLeft="@dimen/padding_10"
-            android:scaleType="fitXY"
-            android:id="@+id/iv_autograph"
-            android:layout_width="@dimen/padding_300"
-            android:layout_height="@dimen/padding_90" />
 
-
-    </LinearLayout>
+    </RelativeLayout>
 
     <View
         android:layout_marginTop="@dimen/padding_20"

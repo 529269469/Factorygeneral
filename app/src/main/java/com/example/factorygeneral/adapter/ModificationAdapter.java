@@ -1,11 +1,9 @@
 package com.example.factorygeneral.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,7 +13,7 @@ import android.widget.TextView;
 import com.example.factorygeneral.R;
 import com.example.factorygeneral.base.MyApplication;
 import com.example.factorygeneral.bean.TextLabelBean;
-import com.example.factorygeneral.greendao.bean.UnitListBean;
+import com.example.factorygeneral.greendao.bean.ModuleListBean;
 import com.example.factorygeneral.greendao.db.UnitListBeanDao;
 import com.example.factorygeneral.utils.SPUtils;
 import com.example.factorygeneral.utils.StringUtils;
@@ -27,17 +25,18 @@ import butterknife.ButterKnife;
 
 /**
  * @author :created by ${ WYW }
- * 时间：2019/11/5 18
+ * 时间：2019/11/12 10
  */
-public class TablePopupAdapter extends BaseAdapter {
+public class ModificationAdapter extends BaseAdapter {
+    private List<ModuleListBean> list;
     private Context context;
-    private List<TextLabelBean> list;
-    public TablePopupAdapter(Context context, List<TextLabelBean> list) {
-        this.context = context;
+
+    public ModificationAdapter(List<ModuleListBean> list, Context context) {
         this.list = list;
+        this.context = context;
     }
 
-    public List<TextLabelBean> getList() {
+    public List<ModuleListBean> getList() {
         return list;
     }
 
@@ -55,15 +54,16 @@ public class TablePopupAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return i;
     }
-    private Integer index = -1;
-    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
+
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int position, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder = null;
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.table_popup_item, viewGroup, false);
+            view = LayoutInflater.from(context).inflate(R.layout.modification_item, viewGroup, false);
             viewHolder = new ViewHolder(view);
-            viewHolder.etText.setTag(i);
+
+            viewHolder.etModification.setTag(position);
+
             class MyTextWatcher implements TextWatcher {
 
                 public MyTextWatcher(ViewHolder holder) {
@@ -87,40 +87,38 @@ public class TablePopupAdapter extends BaseAdapter {
                     String words = s.toString();
                     //首先内容进行非空判断，空内容（""和null）不处理
                     if (!StringUtils.isBlank(words)) {
-                        int pos = (Integer) mHolder.etText.getTag();
-                        TextLabelBean textLabelBean=new TextLabelBean();
-                        textLabelBean.setLabel(list.get(pos).getLabel());
-                        textLabelBean.setText(words);
-                        list.set(pos,textLabelBean);
-                    }else {
-                        int pos = (Integer) mHolder.etText.getTag();
-                        TextLabelBean textLabelBean=new TextLabelBean();
-                        textLabelBean.setLabel(list.get(pos).getLabel());
-                        textLabelBean.setText("null");
-                        list.set(pos,textLabelBean);
+                        int pos = (Integer) mHolder.etModification.getTag();
+                        ModuleListBean moduleListBean=new ModuleListBean();
+                        moduleListBean.setId(list.get(pos).getId());
+                        moduleListBean.setKeyId(list.get(pos).getKeyId());
+                        moduleListBean.setKeyUuid(list.get(pos).getKeyUuid());
+                        moduleListBean.setName(words);
+                        moduleListBean.setUId(list.get(pos).getUId());
+                        moduleListBean.setUserName(list.get(pos).getUserName());
+                        moduleListBean.setUuid(list.get(pos).getUuid());
+                        list.set(pos,moduleListBean);
+
                     }
                 }
             }
-            viewHolder.etText.addTextChangedListener(new MyTextWatcher(viewHolder));
+            viewHolder.etModification.addTextChangedListener(new MyTextWatcher(viewHolder));
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
-            viewHolder.etText.setTag(i);
+            viewHolder.etModification.setTag(position);
         }
-        TextLabelBean textLabelBean=list.get(i);
-
-        viewHolder.etText.setText(StringUtils.isBlank(textLabelBean.getText())?"":textLabelBean.getText());
-        viewHolder.tvText.setText(textLabelBean.getLabel()+":");
+        viewHolder.etModification.setText(StringUtils.isBlank(list.get(position).getName()) ? "" : list.get(position).getName());
 
         return view;
     }
 
+
     static
     class ViewHolder {
-        @BindView(R.id.et_text)
-        EditText etText;
-        @BindView(R.id.tv_text)
-        TextView tvText;
+        @BindView(R.id.et_modification)
+        EditText etModification;
+        @BindView(R.id.tv_del)
+        TextView tvDel;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

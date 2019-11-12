@@ -24,16 +24,10 @@
         <ImageView
             android:id="@+id/iv_up"
             android:src="@drawable/updata"
-            android:layout_marginLeft="@dimen/padding_10"
+            android:layout_marginLeft="@dimen/padding_24"
             android:layout_width="@dimen/padding_20"
             android:layout_height="@dimen/padding_20"/>
 
-        <ImageView
-            android:id="@+id/iv_del"
-            android:src="@drawable/del"
-            android:layout_marginLeft="@dimen/padding_10"
-            android:layout_width="@dimen/padding_20"
-            android:layout_height="@dimen/padding_20"/>
     </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager

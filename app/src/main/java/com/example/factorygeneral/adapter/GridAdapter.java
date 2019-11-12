@@ -3,6 +3,7 @@ package com.example.factorygeneral.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,53 +92,31 @@ public class GridAdapter extends BaseAdapter {
         } else if (end.equals("pdf")) {
             viewHolde.iv_grid.setImageResource(R.drawable.ptf);
         }else {
-            Glide.with(context)
-                    .load(new File((String)SPUtils.get(context, "PackagePath", "") + File.separator + list.get(position).getText()))
-                    .into(viewHolde.iv_grid);
+            Log.e("TAG", "getView: "+list.get(position).getText() );
+            if (list.get(position).getText().indexOf("/storage/emulated")!=-1){
+                Glide.with(context)
+                        .load(new File(list.get(position).getText()))
+                        .into(viewHolde.iv_grid);
+            }else {
+                Glide.with(context)
+                        .load(new File((String)SPUtils.get(context, "PackagePath", "") + File.separator + list.get(position).getText()))
+                        .into(viewHolde.iv_grid);
+            }
+
         }
 
 
-        viewHolde.iv_grid.setOnClickListener(new View.OnClickListener() {
-            private PopupWindow popupWindow;
-
-            @Override
-            public void onClick(View v) {
-                if (end.equals("jpg") || end.equals("gif") || end.equals("png") || end.equals("jpeg") || end.equals("bmp")) {
-                    View poview = LayoutInflater.from(context).inflate(R.layout.image_view, null);
-                    popupWindow = null;
-                    popupWindow = new PopupWindow(poview);
-                    popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-                    popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-                    popupWindow.setOutsideTouchable(true);
-                    popupWindow.setFocusable(true);
-
-                    WindowManager.LayoutParams lp = MyApplication.mContext.getWindow().getAttributes();
-                    lp.alpha = 0.7f;
-                    MyApplication.mContext.getWindow().setAttributes(lp);
-
-                    popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
-                    ImageView iv_image = poview.findViewById(R.id.iv_image);
-                    Glide.with(context)
-                            .load(new File(SPUtils.get(context, "PackagePath", "") + File.separator + list.get(position).getText()))
-                            .into(iv_image);
-                    popupWindow.setOnDismissListener(() -> {
-                        WindowManager.LayoutParams lp1 = MyApplication.mContext.getWindow().getAttributes();
-                        lp1.alpha = 1f;
-                        MyApplication.mContext.getWindow().setAttributes(lp1);
-                    });
-
-
-                    iv_image.setOnClickListener(v1 -> popupWindow.dismiss());
-                } else {
-                    try {
+        viewHolde.iv_grid.setOnClickListener(v -> {
+                try {
+                    if (list.get(position).getText().indexOf("/storage/emulated")!=-1){
+                        context.startActivity(OpenFileUtil.openFile( list.get(position).getText()));
+                    }else {
                         context.startActivity(OpenFileUtil.openFile(SPUtils.get(context, "PackagePath", "") + File.separator + list.get(position).getText()));
-                    } catch (Exception e) {
-                        Toast.makeText(context, "打开失败，原因：文件已经被移动或者删除", Toast.LENGTH_SHORT).show();
                     }
-
+                } catch (Exception e) {
+                    Toast.makeText(context, "打开失败，原因：文件已经被移动或者删除", Toast.LENGTH_SHORT).show();
                 }
-            }
+
 
         });
 

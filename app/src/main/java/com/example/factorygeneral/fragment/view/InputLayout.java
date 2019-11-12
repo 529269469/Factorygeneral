@@ -100,12 +100,14 @@ public class InputLayout extends LinearLayout {
             gridList.remove(position);
             UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
 
-
             StringBuffer relevantFileBuffer = new StringBuffer();
             for (int i = 0; i < gridList.size(); i++) {
                 relevantFileBuffer.append(gridList.get(i).getLabel()).append("@%%%@").append(gridList.get(i).getText()).append(",");
             }
-            String relevantFile = relevantFileBuffer.toString().substring(0, relevantFileBuffer.toString().length() - 1);
+            String relevantFile="";
+            if (!StringUtils.isBlank(relevantFileBuffer.toString())){
+                relevantFile = relevantFileBuffer.toString().substring(0, relevantFileBuffer.toString().length() - 1);
+            }
             UnitListBean unitListBean1 = new UnitListBean(unitListBean.getUId(),
                     unitListBean.getUuid(),
                     unitListBean.getAnswer(),

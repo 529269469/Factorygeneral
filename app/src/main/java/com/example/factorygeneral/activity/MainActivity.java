@@ -145,11 +145,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         SPUtils.put(this, "uuId", packageBeans.get(0).getUuid());
         SPUtils.put(this, "PackageName", packageBeans.get(0).getPackageName());
         SPUtils.put(this, "PackagePath", packageBeans.get(0).getPackagePath());
-
         MenusListBeanDao menusListBeanDao = MyApplication.getInstances().getMenusDaoSession().getMenusListBeanDao();
         List<MenusListBean> menusListBeans = menusListBeanDao.queryBuilder()
                 .where(MenusListBeanDao.Properties.Uuid.eq(uuId))
                 .list();
+
+        SPUtils.put(this, "userName", menusListBeans.get(0).getUserName());
+
         list.addAll(menusListBeans);
         list.get(posNum).setCheck(true);
         titleAdapter = new TitleAdapter(this, list);

@@ -18,7 +18,7 @@
 
     <com.example.factorygeneral.view.LinePathView
         android:id="@+id/path_view"
-        android:layout_width="700dp"
+        android:layout_width="600dp"
         android:layout_height="300dp"
         android:background="@color/color_FFFFFF" />
 

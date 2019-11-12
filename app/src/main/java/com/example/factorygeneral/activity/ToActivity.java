@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import com.example.factorygeneral.greendao.db.ModuleListBeanDao;
 import com.example.factorygeneral.greendao.db.PackageBeanDao;
 import com.example.factorygeneral.greendao.db.ProjectModelBeanDao;
 import com.example.factorygeneral.greendao.db.UnitListBeanDao;
+import com.example.factorygeneral.utils.FileUtils;
 import com.example.factorygeneral.utils.ToastUtils;
 import com.example.factorygeneral.utils.ZipUtils2;
 import com.example.factorygeneral.view.MyListView;
@@ -51,6 +53,9 @@ import java.util.Locale;
 import butterknife.BindView;
 
 public class ToActivity extends BaseActivity {
+
+    private ToAdapter toAdapter;
+
     public static Intent openIntent(Context context) {
         Intent intent = new Intent(context, ToActivity.class);
         return intent;
@@ -61,7 +66,7 @@ public class ToActivity extends BaseActivity {
     @BindView(R.id.tv_tuichu)
     TextView tvTuichu;
     @BindView(R.id.lv_checklist)
-    MyListView lvChecklist;
+    ListView lvChecklist;
     @BindView(R.id.help_center_loading_prgbar)
     RelativeLayout helpCenterLoadingPrgbar;
 
@@ -106,7 +111,7 @@ public class ToActivity extends BaseActivity {
             }
 
         }
-        ToAdapter toAdapter = new ToAdapter(this, list);
+        toAdapter = new ToAdapter(this, list);
         lvChecklist.setAdapter(toAdapter);
 
         lvChecklist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -165,6 +170,32 @@ public class ToActivity extends BaseActivity {
                 }
 
 
+            }
+        });
+
+        lvChecklist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(ToActivity.this);
+                builder.setTitle("是否将数据包删除");
+                builder.setPositiveButton("是！！", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FileUtils.delFile(Environment.getExternalStorageDirectory() + "/factorygeneral/"+list.get(i).getPackageName());
+                        ToastUtils.getInstance().showTextToast(ToActivity.this,"删除成功");
+                        list.remove(i);
+                        toAdapter.notifyDataSetChanged();
+                    }
+                });
+                builder.setNeutralButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.show();
+
+                return true;
             }
         });
     }

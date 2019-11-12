@@ -50,6 +50,7 @@ public class ChecklistActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 startActivity(MainActivity.openIntent(ChecklistActivity.this,list.get(i).getUuid()));
+                finish();
             }
         });
     }

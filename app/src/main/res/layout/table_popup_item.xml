@@ -17,7 +17,7 @@
             android:layout_marginRight="@dimen/padding_100"
             android:layout_alignParentRight="true"
             android:background="@drawable/shape_ed"
-            android:layout_width="600dp"
+            android:layout_width="@dimen/padding_300"
             android:layout_height="@dimen/padding_36"/>
 
         <TextView

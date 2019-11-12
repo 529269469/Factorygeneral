@@ -17,6 +17,7 @@
             android:layout_height="wrap_content"/>
 
         <LinearLayout
+            android:layout_marginLeft="@dimen/padding_130"
             android:layout_width="match_parent"
             android:layout_height="@dimen/padding_40">
             <TextView
@@ -52,7 +53,10 @@
         </LinearLayout>
 
         <com.example.factorygeneral.view.MyGridView
-            android:layout_margin="@dimen/padding_16"
+            android:layout_marginBottom="@dimen/padding_10"
+            android:layout_marginTop="@dimen/padding_10"
+            android:layout_marginRight="@dimen/padding_24"
+            android:layout_marginLeft="@dimen/padding_24"
             android:numColumns="5"
             android:id="@+id/gv_table"
             android:layout_width="match_parent"

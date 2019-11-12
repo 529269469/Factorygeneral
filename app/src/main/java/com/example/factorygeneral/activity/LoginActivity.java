@@ -125,7 +125,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         startActivity(NewActivity.openIntent(LoginActivity.this,name));
                         popupWindow.dismiss();
                     }else {
-                        if (StringUtils.isBlank(findFilesBean.getMessage())){
+                        if (!StringUtils.isBlank(findFilesBean.getMessage())){
                             ToastUtils.getInstance().showTextToast(LoginActivity.this,findFilesBean.getMessage());
                         }else {
                             startActivity(NewActivity.openIntent(LoginActivity.this,name));
