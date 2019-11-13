@@ -6,10 +6,11 @@
     <RelativeLayout
         android:layout_margin="@dimen/padding_24"
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
         <TextView
+            android:layout_centerHorizontal="true"
             android:id="@+id/tv_modification"
             android:textSize="@dimen/padding_20"
             android:textColor="@color/color_5398F7"
@@ -19,14 +20,17 @@
             android:layout_height="wrap_content"/>
 
         <ListView
+            android:layout_centerHorizontal="true"
+            android:divider="@color/color_tran"
             android:layout_above="@id/ll_modification"
             android:layout_marginTop="@dimen/padding_10"
             android:layout_below="@id/tv_modification"
             android:id="@+id/lv_list"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
 
         <LinearLayout
+            android:layout_centerHorizontal="true"
             android:gravity="center"
             android:layout_marginBottom="@dimen/padding_100"
             android:layout_alignParentBottom="true"

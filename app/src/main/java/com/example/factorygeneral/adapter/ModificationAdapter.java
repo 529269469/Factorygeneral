@@ -86,19 +86,18 @@ public class ModificationAdapter extends BaseAdapter {
                 public void afterTextChanged(Editable s) {
                     String words = s.toString();
                     //首先内容进行非空判断，空内容（""和null）不处理
-                    if (!StringUtils.isBlank(words)) {
-                        int pos = (Integer) mHolder.etModification.getTag();
-                        ModuleListBean moduleListBean=new ModuleListBean();
-                        moduleListBean.setId(list.get(pos).getId());
-                        moduleListBean.setKeyId(list.get(pos).getKeyId());
-                        moduleListBean.setKeyUuid(list.get(pos).getKeyUuid());
-                        moduleListBean.setName(words);
-                        moduleListBean.setUId(list.get(pos).getUId());
-                        moduleListBean.setUserName(list.get(pos).getUserName());
-                        moduleListBean.setUuid(list.get(pos).getUuid());
-                        list.set(pos,moduleListBean);
 
-                    }
+                    int pos = (Integer) mHolder.etModification.getTag();
+                    ModuleListBean moduleListBean = new ModuleListBean();
+                    moduleListBean.setId(list.get(pos).getId());
+                    moduleListBean.setKeyId(list.get(pos).getKeyId());
+                    moduleListBean.setKeyUuid(list.get(pos).getKeyUuid());
+                    moduleListBean.setName(StringUtils.isBlank(words) ? "null" : words);
+                    moduleListBean.setUId(list.get(pos).getUId());
+                    moduleListBean.setUserName(list.get(pos).getUserName());
+                    moduleListBean.setUuid(list.get(pos).getUuid());
+                    list.set(pos, moduleListBean);
+
                 }
             }
             viewHolder.etModification.addTextChangedListener(new MyTextWatcher(viewHolder));
@@ -108,6 +107,12 @@ public class ModificationAdapter extends BaseAdapter {
             viewHolder.etModification.setTag(position);
         }
         viewHolder.etModification.setText(StringUtils.isBlank(list.get(position).getName()) ? "" : list.get(position).getName());
+
+        viewHolder.tvDel.setOnClickListener(view1 -> {
+            if (modDel!=null){
+                modDel.setdel(position);
+            }
+        });
 
         return view;
     }
@@ -123,5 +128,16 @@ public class ModificationAdapter extends BaseAdapter {
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+    }
+
+
+    public interface IModDel{
+        void setdel(int position);
+    }
+
+    private IModDel modDel;
+
+    public void setModDel(IModDel modDel) {
+        this.modDel = modDel;
     }
 }

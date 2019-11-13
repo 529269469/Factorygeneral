@@ -32,6 +32,7 @@ public class TextBoxAdapter extends BaseAdapter {
     private Context context;
     private List<TextLabelBean> list;
     private String unitListId;
+
     public TextBoxAdapter(Context context, List<TextLabelBean> list, String unitListId) {
         this.context = context;
         this.list = list;
@@ -52,6 +53,7 @@ public class TextBoxAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return i;
     }
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder = null;
@@ -82,44 +84,43 @@ public class TextBoxAdapter extends BaseAdapter {
                 public void afterTextChanged(Editable s) {
                     String words = s.toString();
                     //首先内容进行非空判断，空内容（""和null）不处理
-                    if (!StringUtils.isBlank(words)) {
-                        int pos = (Integer) mHolder.etText.getTag();
-                        TextLabelBean textLabelBean=new TextLabelBean();
-                        textLabelBean.setLabel(list.get(i).getLabel());
-                        textLabelBean.setText(words);
-                        list.set(pos,textLabelBean);
+                    int pos = (Integer) mHolder.etText.getTag();
+                    TextLabelBean textLabelBean = new TextLabelBean();
+                    textLabelBean.setLabel(list.get(i).getLabel());
+                    textLabelBean.setText(StringUtils.isBlank(words) ? "null" : words);
+                    list.set(pos, textLabelBean);
 
-                        StringBuffer labelBuffer=new StringBuffer();
-                        StringBuffer textBuffer=new StringBuffer();
-                        for (int j = 0; j <list.size() ; j++) {
-                            labelBuffer.append(list.get(j).getLabel()).append("%%&@");
-                            textBuffer.append(StringUtils.isBlank(list.get(j).getText())?"null":list.get(j).getText()).append("%%&@");
-                        }
-                        String label=labelBuffer.toString().substring(0,labelBuffer.toString().length()-4);
-                        String text=textBuffer.toString().substring(0,textBuffer.toString().length()-4);
-
-                        UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
-                        List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
-                                .where(UnitListBeanDao.Properties.Uuid.eq((String)SPUtils.get(context,"uuId","")))
-                                .where(UnitListBeanDao.Properties.Id.eq(unitListId))
-                                .list();
-
-                        UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
-                                unitListBeans.get(0).getUuid(),
-                                unitListBeans.get(0).getAnswer(),
-                                unitListBeans.get(0).getContent(),
-                                unitListBeans.get(0).getContentFile(),
-                                unitListBeans.get(0).getId(),
-                                unitListBeans.get(0).getKeyUuid(),
-                                label,
-                                unitListBeans.get(0).getRelevantFile(),
-                                unitListBeans.get(0).getSx(),
-                                text,
-                                unitListBeans.get(0).getType(),
-                                unitListBeans.get(0).getUserName());
-                        unitListBeanDao.update(unitListBean);
-
+                    StringBuffer labelBuffer = new StringBuffer();
+                    StringBuffer textBuffer = new StringBuffer();
+                    for (int j = 0; j < list.size(); j++) {
+                        labelBuffer.append(list.get(j).getLabel()).append("%%&@");
+                        textBuffer.append(StringUtils.isBlank(list.get(j).getText()) ? "null" : list.get(j).getText()).append("%%&@");
                     }
+                    String label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 4);
+                    String text = textBuffer.toString().substring(0, textBuffer.toString().length() - 4);
+
+                    UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+                    List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
+                            .where(UnitListBeanDao.Properties.Uuid.eq((String) SPUtils.get(context, "uuId", "")))
+                            .where(UnitListBeanDao.Properties.Id.eq(unitListId))
+                            .list();
+
+                    UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
+                            unitListBeans.get(0).getUuid(),
+                            unitListBeans.get(0).getAnswer(),
+                            unitListBeans.get(0).getContent(),
+                            unitListBeans.get(0).getContentFile(),
+                            unitListBeans.get(0).getId(),
+                            unitListBeans.get(0).getKeyUuid(),
+                            label,
+                            unitListBeans.get(0).getRelevantFile(),
+                            unitListBeans.get(0).getSx(),
+                            text,
+                            unitListBeans.get(0).getType(),
+                            unitListBeans.get(0).getUserName());
+                    unitListBeanDao.update(unitListBean);
+
+
                 }
             }
             viewHolder.etText.addTextChangedListener(new MyTextWatcher(viewHolder));
@@ -130,8 +131,8 @@ public class TextBoxAdapter extends BaseAdapter {
             viewHolder.etText.setTag(i);
         }
 
-        viewHolder.tvText.setText(list.get(i).getLabel()+":");
-        viewHolder.etText.setText(StringUtils.isBlank(list.get(i).getText())?"":list.get(i).getText());
+        viewHolder.tvText.setText(list.get(i).getLabel() + ":");
+        viewHolder.etText.setText(StringUtils.isBlank(list.get(i).getText()) ? "" : list.get(i).getText());
 
         return view;
     }

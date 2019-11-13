@@ -32,6 +32,7 @@ import butterknife.ButterKnife;
 public class TablePopupAdapter extends BaseAdapter {
     private Context context;
     private List<TextLabelBean> list;
+
     public TablePopupAdapter(Context context, List<TextLabelBean> list) {
         this.context = context;
         this.list = list;
@@ -55,7 +56,9 @@ public class TablePopupAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return i;
     }
+
     private Integer index = -1;
+
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
@@ -86,19 +89,12 @@ public class TablePopupAdapter extends BaseAdapter {
                 public void afterTextChanged(Editable s) {
                     String words = s.toString();
                     //首先内容进行非空判断，空内容（""和null）不处理
-                    if (!StringUtils.isBlank(words)) {
-                        int pos = (Integer) mHolder.etText.getTag();
-                        TextLabelBean textLabelBean=new TextLabelBean();
-                        textLabelBean.setLabel(list.get(pos).getLabel());
-                        textLabelBean.setText(words);
-                        list.set(pos,textLabelBean);
-                    }else {
-                        int pos = (Integer) mHolder.etText.getTag();
-                        TextLabelBean textLabelBean=new TextLabelBean();
-                        textLabelBean.setLabel(list.get(pos).getLabel());
-                        textLabelBean.setText("null");
-                        list.set(pos,textLabelBean);
-                    }
+                    int pos = (Integer) mHolder.etText.getTag();
+                    TextLabelBean textLabelBean = new TextLabelBean();
+                    textLabelBean.setLabel(list.get(pos).getLabel());
+                    textLabelBean.setText(StringUtils.isBlank(words) ? "null" : words);
+                    list.set(pos, textLabelBean);
+
                 }
             }
             viewHolder.etText.addTextChangedListener(new MyTextWatcher(viewHolder));
@@ -107,10 +103,10 @@ public class TablePopupAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
             viewHolder.etText.setTag(i);
         }
-        TextLabelBean textLabelBean=list.get(i);
+        TextLabelBean textLabelBean = list.get(i);
 
-        viewHolder.etText.setText(StringUtils.isBlank(textLabelBean.getText())?"":textLabelBean.getText());
-        viewHolder.tvText.setText(textLabelBean.getLabel()+":");
+        viewHolder.etText.setText(StringUtils.isBlank(textLabelBean.getText()) ? "" : textLabelBean.getText());
+        viewHolder.tvText.setText(textLabelBean.getLabel() + ":");
 
         return view;
     }

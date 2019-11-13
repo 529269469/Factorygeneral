@@ -113,20 +113,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleAdapter titleAdapter;
     private List<MenusListBean> list = new ArrayList<>();
-    private int posNum = 0;
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MenusListBeanDao menusListBeanDao = MyApplication.getInstances().getMenusDaoSession().getMenusListBeanDao();
-        List<MenusListBean> modifyBeans = menusListBeanDao.queryBuilder()
-                .where(MenusListBeanDao.Properties.Uuid.eq(uuId))
-                .list();
-        list.clear();
-        list.addAll(modifyBeans);
-        list.get(posNum).setCheck(true);
-        titleAdapter.notifyDataSetChanged();
-    }
 
     private FragmentTransaction transaction;
 
@@ -153,18 +139,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         SPUtils.put(this, "userName", menusListBeans.get(0).getUserName());
 
         list.addAll(menusListBeans);
-        list.get(posNum).setCheck(true);
+        list.get(0).setCheck(true);
         titleAdapter = new TitleAdapter(this, list);
         gvOne.setAdapter(titleAdapter);
 
         transaction = getSupportFragmentManager().beginTransaction();
-        homeFragment = new HomeFragment(uuId, list.get(posNum).getKeyId());
+        homeFragment = new HomeFragment(uuId, list.get(0).getKeyId());
         transaction.replace(R.id.frame, homeFragment);
         transaction.commit();
 
         gvOne.setOnItemClickListener((adapterView, view, position, l) -> {
             drawerlayoutDrawer.closeDrawers();
-            posNum = position;
             tvTuichu.setText(list.get(position).getName());
             for (int i = 0; i < list.size(); i++) {
                 list.get(i).setCheck(false);

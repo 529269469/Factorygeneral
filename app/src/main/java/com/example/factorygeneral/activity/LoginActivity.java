@@ -1,5 +1,6 @@
 package com.example.factorygeneral.activity;
 
+import android.Manifest;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
@@ -24,10 +25,15 @@ import com.example.factorygeneral.utils.ToastUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.Callback;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
+import me.weyye.hipermission.HiPermission;
+import me.weyye.hipermission.PermissionCallback;
+import me.weyye.hipermission.PermissionItem;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -49,6 +55,31 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         llFile.setOnClickListener(this);
         llChecklist.setOnClickListener(this);
         llNew.setOnClickListener(this);
+
+        List<PermissionItem> permissionItems1 = new ArrayList<PermissionItem>();
+        permissionItems1.add(new PermissionItem(Manifest.permission.WRITE_EXTERNAL_STORAGE, "存储", R.drawable.permission_ic_storage));
+        permissionItems1.add(new PermissionItem(Manifest.permission.CAMERA, "照相机", R.drawable.permission_ic_camera));
+        HiPermission.create(this)
+                .permissions(permissionItems1)
+                .checkMutiPermission(new PermissionCallback() {
+                    @Override
+                    public void onClose() {
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+
+                    @Override
+                    public void onDeny(String permisson, int position) {
+                        finish();
+                    }
+
+                    @Override
+                    public void onGuarantee(String permisson, int position) {
+                    }
+                });
 
     }
 
@@ -110,8 +141,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         });
 
         tv_save.setOnClickListener(view12 -> {
-//            String name=tv_name.getText().toString().trim();
-            String name="ruohan";
+            String name=tv_name.getText().toString().trim();
+//            String name="ruohan";
             if (StringUtils.isBlank(name)){
                 ToastUtils.getInstance().showTextToast(this,"请输入用户名");
                 return;

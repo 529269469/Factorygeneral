@@ -25,7 +25,9 @@ import com.example.factorygeneral.adapter.TbAdapter;
 import com.example.factorygeneral.base.BaseFragment;
 import com.example.factorygeneral.base.MyApplication;
 import com.example.factorygeneral.greendao.bean.ModuleListBean;
+import com.example.factorygeneral.greendao.bean.UnitListBean;
 import com.example.factorygeneral.greendao.db.ModuleListBeanDao;
+import com.example.factorygeneral.greendao.db.UnitListBeanDao;
 import com.example.factorygeneral.utils.SPUtils;
 import com.example.factorygeneral.view.ContentViewPager;
 import com.google.android.material.tabs.TabLayout;
@@ -143,7 +145,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         View modificationView = getLayoutInflater().inflate(R.layout.modification_view, null);
         PopupWindow modificationWindow = new PopupWindow(modificationView);
         modificationWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        modificationWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        modificationWindow.setWidth(700);
         modificationWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         modificationWindow.setOutsideTouchable(true);
         modificationWindow.setFocusable(true);
@@ -167,13 +169,42 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         tv_cancel.setOnClickListener(view -> modificationWindow.dismiss());
         //确定
         tv_save.setOnClickListener(view -> {
+            ModuleListBeanDao moduleListBeanDao = MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
+            listTitle= modificationAdapter.getList();
 
+            for (int i = 0; i < listTitle.size(); i++) {
+                ModuleListBean moduleListBean=new ModuleListBean(listTitle.get(i).getUId(),
+                        listTitle.get(i).getUuid(),
+                        listTitle.get(i).getId(),
+                        listTitle.get(i).getKeyId(),
+                        listTitle.get(i).getKeyUuid(),
+                        listTitle.get(i).getName(),
+                        listTitle.get(i).getUserName());
+                moduleListBeanDao.update(moduleListBean);
+            }
 
-
-
+            tbAdapter.notifyDataSetChanged();
             modificationWindow.dismiss();
         });
 
+        modificationAdapter.setModDel(position -> {
+            ModuleListBeanDao moduleListBeanDao = MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
+            moduleListBeanDao.deleteByKey(listTitle.get(position).getUId());
+
+            UnitListBeanDao unitListBeanDao=MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+            List<UnitListBean> unitListBeanList=unitListBeanDao.queryBuilder()
+                    .where(UnitListBeanDao.Properties.Uuid.eq(uuId))
+                    .where(UnitListBeanDao.Properties.KeyUuid.eq(listTitle.get(position).getKeyUuid()))
+                    .list();
+            for (int i = 0; i <unitListBeanList.size() ; i++) {
+                unitListBeanDao.deleteByKey(unitListBeanList.get(i).getUId());
+            }
+
+            list.remove(position);
+            listTitle.remove(position);
+            tbAdapter.notifyDataSetChanged();
+            modificationWindow.dismiss();
+        });
 
     }
 }

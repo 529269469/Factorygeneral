@@ -152,7 +152,7 @@ public class NewActivity extends BaseActivity implements View.OnClickListener {
     private void uploadingMethod(FindFilesBean.DataBean dataBean) {
         OkHttpUtils.post()
                 .url(URLS.APPUPFILE)
-                .addParams("userName",dataBean.getUserName())
+                .addParams("userName",name)
                 .addFile("file",dataBean.getName(),new File(Environment.getExternalStorageDirectory() + "/factorygeneral/"+dataBean.getName()))
                 .build()
                 .execute(new StringCallback() {
@@ -178,7 +178,7 @@ public class NewActivity extends BaseActivity implements View.OnClickListener {
      */
     private void downloadMethod(FindFilesBean.DataBean dataBean) {
         OkHttpUtils.get()
-                .url(URLS.LISTDOWN+"?userName="+dataBean.getUserName()+"&fileName="+dataBean.getName())
+                .url(URLS.LISTDOWN+"?userName="+name+"&fileName="+dataBean.getName())
                 .build()
                 .execute(new FileCallBack(Environment.getExternalStorageDirectory() + "/factorygeneral",dataBean.getName()) {
                     @Override

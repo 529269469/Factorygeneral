@@ -62,6 +62,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
     private String[] contentArray;
     private List<TextLabelBean> gridList;
     private GridAdapter gridAdapter;
+    private String[] contentFileArray;
 
     @Override
     protected void initEventAndData() {
@@ -131,8 +132,6 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
     protected int getLayoutId() {
         return R.layout.fragment_model;
     }
-
-
 
 
     private String unitListId;
@@ -264,22 +263,31 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         textLabelBeans1.clear();
         gridList = new ArrayList<>();
         gridList.clear();
-        textArray=null;
-        contentArray=null;
-        textArray = unitListBean.getText().split("%%&@");
-        contentArray = unitListBean.getContent().split("%%&@");
-
+        textArray = null;
+        contentArray = null;
+        if (!StringUtils.isBlank(unitListBean.getText())) {
+            textArray = unitListBean.getText().split("%%&@");
+        }
+        if (!StringUtils.isBlank(unitListBean.getContent())) {
+            contentArray = unitListBean.getContent().split("%%&@");
+        }
+        if (!StringUtils.isBlank(unitListBean.getContentFile())) {
+            contentFileArray = unitListBean.getContentFile().split("%%&@");
+        }
 
         if (isLook) {
             String[] strrr = contentArray[position].split("★&&☆");
             for (int i = 0; i < textArray.length; i++) {
                 TextLabelBean textLabelBean = new TextLabelBean();
                 textLabelBean.setLabel(textArray[i]);
-                textLabelBean.setText(strrr[i]);
+                try {
+                    textLabelBean.setText(strrr[i]);
+                } catch (Exception ex) {
+                }
+
                 textLabelBeans1.add(textLabelBean);
             }
-            if (!StringUtils.isBlank(unitListBean.getContentFile())){
-                String[] contentFileArray = unitListBean.getContentFile().split("%%&@");
+            if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[position])) {
                 String[] contentFileArray2 = contentFileArray[position].split(",");
                 for (int i = 0; i < contentFileArray2.length; i++) {
                     String[] contentFileArray3 = contentFileArray2[i].split("@%%%@");
@@ -294,6 +302,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             for (int i = 0; i < textArray.length; i++) {
                 TextLabelBean textLabelBean = new TextLabelBean();
                 textLabelBean.setLabel(textArray[i]);
+                textLabelBean.setText("null");
                 textLabelBeans1.add(textLabelBean);
             }
         }
@@ -322,21 +331,27 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             for (int j = 0; j < textLabelBeans.size(); j++) {
                 textBuffer.append(StringUtils.isBlank(textLabelBeans.get(j).getText()) ? "null" : textLabelBeans.get(j).getText()).append("★&&☆");
             }
-
             String text = textBuffer.toString().substring(0, textBuffer.toString().length() - 4);
-            contentArray[position] = text;
 
-            StringBuffer content = new StringBuffer();
-            for (int i = 0; i < contentArray.length; i++) {
-                content.append(contentArray[i]).append("%%&@");
+            if (isLook) {
+                contentArray[position] = text;
             }
-            text = content.toString().substring(0, content.toString().length() - 4);
+            StringBuffer content = new StringBuffer();
+            if (contentArray != null) {
+                for (int i = 0; i < contentArray.length; i++) {
+                    content.append(contentArray[i]).append("%%&@");
+                }
+            }
+
+            if (isLook) {
+                text = content.toString().substring(0, content.toString().length() - 4);
+            } else {
+                text = content.toString() + text;
+            }
 
 
-            if (!StringUtils.isBlank(unitListBean.getContentFile())){
-                String[] contentFiledel = unitListBean.getContentFile().split("%%&@");
-                String[] contentFiledel2 = contentFiledel[position].split(",");
-
+            if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[position])) {
+                String[] contentFiledel2 = contentFileArray[position].split(",");
                 boolean isDel = false;
                 for (int i = 0; i < contentFiledel2.length; i++) {
                     String[] contentFileArray3 = contentFiledel2[i].split("@%%%@");
@@ -353,32 +368,51 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             }
 
 
-
             StringBuffer relevantFileBuffer = new StringBuffer();
-            for (int i = 0; i < gridList.size(); i++) {
-                if (gridList.get(i).getText().indexOf("/storage/emulated")!=-1){
-                    String end = gridList.get(i).getText().substring(gridList.get(i).getText().lastIndexOf(".") + 1
-                            , gridList.get(i).getText().length()).toLowerCase(Locale.getDefault());
-                    String upLoadFileName = System.currentTimeMillis()+"."+end;
+            if (!gridList.isEmpty()) {
+                for (int i = 0; i < gridList.size(); i++) {
+                    if (gridList.get(i).getText().indexOf("/storage/emulated") != -1) {
+                        String end = gridList.get(i).getText().substring(gridList.get(i).getText().lastIndexOf(".") + 1
+                                , gridList.get(i).getText().length()).toLowerCase(Locale.getDefault());
+                        String upLoadFileName = System.currentTimeMillis() + "." + end;
 
-                    FileUtils.copyFile(gridList.get(i).getText(),
-                            (String) SPUtils.get(getActivity(), "PackagePath", "")+File.separator+upLoadFileName);
-                    relevantFileBuffer
-                            .append(gridList.get(i).getLabel()).append("@%%%@")
-                            .append(upLoadFileName)
-                            .append(",");
-                }else {
-                    relevantFileBuffer
-                            .append(gridList.get(i).getLabel()).append("@%%%@")
-                            .append(gridList.get(i).getText())
-                            .append(",");
+                        FileUtils.copyFile(gridList.get(i).getText(),
+                                (String) SPUtils.get(getActivity(), "PackagePath", "") + File.separator + upLoadFileName);
+                        relevantFileBuffer
+                                .append(gridList.get(i).getLabel()).append("@%%%@")
+                                .append(upLoadFileName)
+                                .append(",");
+                    } else {
+                        relevantFileBuffer
+                                .append(gridList.get(i).getLabel()).append("@%%%@")
+                                .append(gridList.get(i).getText())
+                                .append(",");
+                    }
+
+
                 }
-
-
             }
-            String relevantFile="";
-            if (!StringUtils.isBlank(relevantFileBuffer.toString())){
+
+            String relevantFile = "null";
+            if (!StringUtils.isBlank(relevantFileBuffer.toString())) {
                 relevantFile = relevantFileBuffer.toString().substring(0, relevantFileBuffer.toString().length() - 1);
+            }
+            if (isLook && contentFileArray != null) {
+                contentFileArray[position] = relevantFile;
+            }
+
+            String conFile = "null";
+
+            StringBuffer contentFile = new StringBuffer();
+            if (contentFileArray != null) {
+                for (int i = 0; i < contentFileArray.length; i++) {
+                    contentFile.append(contentFileArray[i]).append("%%&@");
+                }
+            }
+            if (isLook&&!StringUtils.isBlank(contentFile.toString())) {
+                conFile = contentFile.toString().substring(0, contentFile.toString().length() - 4);
+            } else {
+                conFile = contentFile.toString() + relevantFile;
             }
 
             UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
@@ -386,7 +420,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                     unitListBean.getUuid(),
                     unitListBean.getAnswer(),
                     text,
-                    relevantFile,
+                    conFile,
                     unitListBean.getId(),
                     unitListBean.getKeyUuid(),
                     unitListBean.getLabel(),
@@ -416,9 +450,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                         File file = new File(path);
                         if (file.exists()) {
                             String end = file.getName().substring(file.getName().lastIndexOf(".") + 1, file.getName().length()).toLowerCase(Locale.getDefault());
-                            String upLoadFileName = System.currentTimeMillis()+"."+end;
+                            String upLoadFileName = System.currentTimeMillis() + "." + end;
                             FileUtils.copyFile(file.getPath(),
-                                    (String) SPUtils.get(getActivity(), "PackagePath", "")+File.separator+upLoadFileName);
+                                    (String) SPUtils.get(getActivity(), "PackagePath", "") + File.separator + upLoadFileName);
 
                             UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
                             List<UnitListBean> unitListBeanList = unitListBeanDao.queryBuilder()
@@ -483,14 +517,14 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                         unitListBeanList.get(0).getUserName());
                 unitListBeanDao.update(unitListBean1);
                 initData();
-            }else if (requestCode == 111){
+            } else if (requestCode == 111) {
                 Uri uri = data.getData();
                 if (uri != null) {
                     String path = FileUtils.getPath(getActivity(), uri);
                     if (path != null) {
                         File file = new File(path);
                         if (file.exists()) {
-                            TextLabelBean textLabelBean=new TextLabelBean();
+                            TextLabelBean textLabelBean = new TextLabelBean();
                             textLabelBean.setText(file.getPath());
                             textLabelBean.setLabel(file.getName());
                             gridList.add(textLabelBean);
@@ -498,11 +532,11 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                         }
                     }
                 }
-            }else if (requestCode == 222){
+            } else if (requestCode == 222) {
                 String photoPath = String.valueOf(cameraSavePath);
                 File file = new File(photoPath);
                 String upLoadFileName = file.getName();
-                TextLabelBean textLabelBean=new TextLabelBean();
+                TextLabelBean textLabelBean = new TextLabelBean();
                 textLabelBean.setText(upLoadFileName);
                 textLabelBean.setLabel(upLoadFileName);
                 gridList.add(textLabelBean);
@@ -518,9 +552,10 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
     /**
      * 计算出来的位置，y方向就在anchorView的上面和下面对齐显示，x方向就是与屏幕右边对齐显示
      * 如果anchorView的位置有变化，就可以适当自己额外加入偏移来修正
+     *
      * @param anchorView  呼出window的view
-     * @param contentView   window的内容布局
-     * @return window显示的左上角的xOff,yOff坐标
+     * @param contentView window的内容布局
+     * @return window显示的左上角的xOff, yOff坐标
      */
     private static int[] calculatePopWindowPos(final View anchorView, final View contentView) {
         final int windowPos[] = new int[2];

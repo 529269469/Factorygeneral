@@ -82,6 +82,7 @@ public class TableLayout extends LinearLayout {
                     try {
                         list.add(contentArray2[j]);
                     } catch (Exception ex) {
+                        list.add("");
                     }
                 }
 

@@ -70,29 +70,18 @@ public class GridAdapter extends BaseAdapter {
 
         /* 取得扩展名 */
         String end = list.get(position).getText().substring(list.get(position).getText().lastIndexOf(".") + 1, list.get(position).getText().length()).toLowerCase(Locale.getDefault());
-        if (end.equals("m4a") ||
-                end.equals("mp3") ||
-                end.equals("mid") ||
-                end.equals("xmf") ||
-                end.equals("ogg") ||
-                end.equals("wav") ||
-                end.equals("3gp") ||
-                end.equals("mp4") ||
-                end.equals("wmv")) {
-            viewHolde.iv_grid2.setVisibility(View.VISIBLE);
-        } else {
-            viewHolde.iv_grid2.setVisibility(View.GONE);
-        }
-
 
         if (end.equals("doc") || end.equals("docx")) {
+            viewHolde.iv_grid2.setVisibility(View.GONE);
             viewHolde.iv_grid.setImageResource(R.drawable.doc);
         } else if (end.equals("xls") || end.equals("xlsx")) {
+            viewHolde.iv_grid2.setVisibility(View.GONE);
             viewHolde.iv_grid.setImageResource(R.drawable.excel3);
         } else if (end.equals("pdf")) {
+            viewHolde.iv_grid2.setVisibility(View.GONE);
             viewHolde.iv_grid.setImageResource(R.drawable.ptf);
-        }else {
-            Log.e("TAG", "getView: "+list.get(position).getText() );
+        } else if (end.equals("jpg") || end.equals("gif") || end.equals("png") || end.equals("jpeg") || end.equals("bmp")) {
+            viewHolde.iv_grid2.setVisibility(View.GONE);
             if (list.get(position).getText().indexOf("/storage/emulated")!=-1){
                 Glide.with(context)
                         .load(new File(list.get(position).getText()))
@@ -102,6 +91,30 @@ public class GridAdapter extends BaseAdapter {
                         .load(new File((String)SPUtils.get(context, "PackagePath", "") + File.separator + list.get(position).getText()))
                         .into(viewHolde.iv_grid);
             }
+
+        }else if (end.equals("m4a")
+                || end.equals("mp3")
+                || end.equals("mid")
+                || end.equals("xmf")
+                || end.equals("ogg")
+                || end.equals("wav")
+                || end.equals("3gp")
+                || end.equals("mp4")
+                || end.equals("wmv")) {
+
+            viewHolde.iv_grid2.setVisibility(View.VISIBLE);
+            if (list.get(position).getText().indexOf("/storage/emulated")!=-1){
+                Glide.with(context)
+                        .load(new File(list.get(position).getText()))
+                        .into(viewHolde.iv_grid);
+            }else {
+                Glide.with(context)
+                        .load(new File((String)SPUtils.get(context, "PackagePath", "") + File.separator + list.get(position).getText()))
+                        .into(viewHolde.iv_grid);
+            }
+        }else {
+            viewHolde.iv_grid2.setVisibility(View.GONE);
+            viewHolde.iv_grid.setImageResource(R.drawable.other);
 
         }
 
