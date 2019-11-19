@@ -3,7 +3,7 @@ package com.example.factorygeneral.net;
 
 public class URLS {
 
-    public static final String HTTP = "http://192.168.1.101:3001/";
+    public static final String HTTP = "http://192.168.10.101:3001/";
 
 
     public static final String USERNAME =HTTP+"file/findFiles";

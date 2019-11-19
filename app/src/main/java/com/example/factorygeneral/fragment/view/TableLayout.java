@@ -100,6 +100,10 @@ public class TableLayout extends LinearLayout {
                 if (iTable!=null){
                     iTable.setTable1(num-1,true,unitListBean);
                 }
+            }else if (num==0){
+                if (iTable!=null){
+                    iTable.setTable1(unitListBean);
+                }
             }
         });
 
@@ -115,6 +119,7 @@ public class TableLayout extends LinearLayout {
 
     public interface ITable{
         void setTable1(int position, boolean isLook,UnitListBean unitListBean);
+        void setTable1(UnitListBean unitListBean);
     }
 
     private ITable iTable;

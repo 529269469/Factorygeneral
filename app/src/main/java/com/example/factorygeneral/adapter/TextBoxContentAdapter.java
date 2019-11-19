@@ -101,8 +101,9 @@ public class TextBoxContentAdapter extends BaseAdapter {
         viewHolder.etText.setText(StringUtils.isBlank(textLabelBean.getLabel()) ? "" : textLabelBean.getLabel());
 
         viewHolder.tvDel.setOnClickListener(view1 -> {
-            list.remove(i);
-            notifyDataSetChanged();
+            if (textBoxContent!=null){
+                textBoxContent.setTextBoxContent(i);
+            }
         });
         return view;
     }
@@ -118,5 +119,15 @@ public class TextBoxContentAdapter extends BaseAdapter {
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+    }
+
+    public interface ITextBoxContent{
+        void setTextBoxContent(int position);
+    }
+
+    private ITextBoxContent textBoxContent;
+
+    public void setTextBoxContent(ITextBoxContent textBoxContent) {
+        this.textBoxContent = textBoxContent;
     }
 }

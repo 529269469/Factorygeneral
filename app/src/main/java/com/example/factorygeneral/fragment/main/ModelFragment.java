@@ -1,5 +1,6 @@
 package com.example.factorygeneral.fragment.main;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,6 +18,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.factorygeneral.R;
 import com.example.factorygeneral.adapter.GridAdapter;
@@ -136,27 +138,40 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
     private String unitListId;
     private Uri uri;
     private int type;
+
+    /**
+     * 多文本
+     */
     @Override
     public void seTextBoxId(String unitListId, View operationView) {
         this.unitListId = unitListId;
-        type=111;
+        type = 111;
         popuView(operationView);
     }
 
+    /**
+     * 文本域
+     */
     @Override
     public void setInputId(String unitListId, View operationView) {
         this.unitListId = unitListId;
-        type=222;
+        type = 222;
         popuView(operationView);
     }
 
+    /**
+     * 单选
+     */
     @Override
     public void setCheckBoxId(String unitListId, View operationView) {
         this.unitListId = unitListId;
-        type=333;
+        type = 333;
         popuView(operationView);
     }
 
+    /**
+     * 签名
+     */
     @Override
     public void setAutograph(String unitListId) {
         this.unitListId = unitListId;
@@ -164,6 +179,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
     }
 
 
+    /**
+     * 修改按钮
+     */
     private void popuView(View operationView) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.operation_view, null);
         PopupWindow popupWindow = new PopupWindow(view);
@@ -217,7 +235,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
         tv_content.setOnClickListener(view12 -> {
             popupWindow.dismiss();
-            switch (type){
+            switch (type) {
                 case 111://多文本
                     textBoxContentPopup();
                     break;
@@ -233,6 +251,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
     }
 
+    /**
+     * 修改文本域
+     */
     private void inputContentPopup() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.input_content_view, null);
         PopupWindow popupWindow = new PopupWindow(view);
@@ -252,9 +273,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             getActivity().getWindow().setAttributes(lp1);
         });
 
-        EditText et_text=view.findViewById(R.id.et_text);
-        TextView tv_cancel=view.findViewById(R.id.tv_cancel);
-        TextView tv_save=view.findViewById(R.id.tv_save);
+        EditText et_text = view.findViewById(R.id.et_text);
+        TextView tv_cancel = view.findViewById(R.id.tv_cancel);
+        TextView tv_save = view.findViewById(R.id.tv_save);
 
         UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
         List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
@@ -290,6 +311,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
     }
 
+    /**
+     * 修改多文本
+     */
     private void textBoxContentPopup() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.text_box_content_view, null);
         PopupWindow popupWindow = new PopupWindow(view);
@@ -308,12 +332,12 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             lp1.alpha = 1f;
             getActivity().getWindow().setAttributes(lp1);
         });
-        ListView lv_content=view.findViewById(R.id.lv_content);
-        TextView tv_add=view.findViewById(R.id.tv_add);
-        TextView tv_cancel=view.findViewById(R.id.tv_cancel);
-        TextView tv_save=view.findViewById(R.id.tv_save);
+        ListView lv_content = view.findViewById(R.id.lv_content);
+        TextView tv_add = view.findViewById(R.id.tv_add);
+        TextView tv_cancel = view.findViewById(R.id.tv_cancel);
+        TextView tv_save = view.findViewById(R.id.tv_save);
 
-        List<TextLabelBean> textLabelBeans=new ArrayList<>();
+        List<TextLabelBean> textLabelBeans = new ArrayList<>();
 
         UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
         List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
@@ -332,9 +356,12 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             textLabelBeans.add(textLabelBean);
         }
 
-        TextBoxContentAdapter textBoxContentAdapter=new TextBoxContentAdapter(getActivity(),textLabelBeans);
+        TextBoxContentAdapter textBoxContentAdapter = new TextBoxContentAdapter(getActivity(), textLabelBeans);
         lv_content.setAdapter(textBoxContentAdapter);
-
+        textBoxContentAdapter.setTextBoxContent(position -> {
+            textLabelBeans.remove(position);
+            textBoxContentAdapter.notifyDataSetChanged();
+        });
         tv_add.setOnClickListener(view1 -> {
             TextLabelBean textLabelBean = new TextLabelBean();
             textLabelBean.setLabel("null");
@@ -352,13 +379,13 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
             StringBuffer labelBuffer = new StringBuffer();
             StringBuffer textBuffer = new StringBuffer();
-            for (int i = 0; i <textLabelBeans.size() ; i++) {
+            for (int i = 0; i < textLabelBeans.size(); i++) {
                 labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("%%&@");
                 textBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getText()) ? "null" : textLabelBeans.get(i).getText()).append("%%&@");
             }
-            String label="";
+            String label = "";
             String text = "";
-            if (!StringUtils.isBlank(labelBuffer.toString())){
+            if (!StringUtils.isBlank(labelBuffer.toString())) {
                 label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 4);
                 text = textBuffer.toString().substring(0, textBuffer.toString().length() - 4);
             }
@@ -383,7 +410,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
     }
 
-    //TODO
+    /**
+     * 修改单选
+     */
     private void checkBoxContentPopup() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.check_box_content_view, null);
         PopupWindow popupWindow = new PopupWindow(view);
@@ -402,13 +431,13 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             lp1.alpha = 1f;
             getActivity().getWindow().setAttributes(lp1);
         });
-        EditText et_label=view.findViewById(R.id.et_label);
-        ListView lv_content=view.findViewById(R.id.lv_content);
-        TextView tv_add=view.findViewById(R.id.tv_add);
-        TextView tv_cancel=view.findViewById(R.id.tv_cancel);
-        TextView tv_save=view.findViewById(R.id.tv_save);
+        EditText et_label = view.findViewById(R.id.et_label);
+        ListView lv_content = view.findViewById(R.id.lv_content);
+        TextView tv_add = view.findViewById(R.id.tv_add);
+        TextView tv_cancel = view.findViewById(R.id.tv_cancel);
+        TextView tv_save = view.findViewById(R.id.tv_save);
 
-        List<TextLabelBean> textLabelBeans=new ArrayList<>();
+        List<TextLabelBean> textLabelBeans = new ArrayList<>();
 
         UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
         List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
@@ -429,8 +458,13 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             textLabelBeans.add(textLabelBean);
         }
 
-        TextBoxContentAdapter textBoxContentAdapter=new TextBoxContentAdapter(getActivity(),textLabelBeans);
+        TextBoxContentAdapter textBoxContentAdapter = new TextBoxContentAdapter(getActivity(), textLabelBeans);
         lv_content.setAdapter(textBoxContentAdapter);
+
+        textBoxContentAdapter.setTextBoxContent(position -> {
+            textLabelBeans.remove(position);
+            textBoxContentAdapter.notifyDataSetChanged();
+        });
 
         tv_add.setOnClickListener(view1 -> {
             TextLabelBean textLabelBean = new TextLabelBean();
@@ -448,11 +482,11 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         tv_save.setOnClickListener(view13 -> {
 
             StringBuffer labelBuffer = new StringBuffer();
-            for (int i = 0; i <textLabelBeans.size() ; i++) {
+            for (int i = 0; i < textLabelBeans.size(); i++) {
                 labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("&&");
             }
-            String label="";
-            if (!StringUtils.isBlank(labelBuffer.toString())){
+            String label = "";
+            if (!StringUtils.isBlank(labelBuffer.toString())) {
                 label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 2);
             }
             UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
@@ -476,6 +510,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
     }
 
+    /**
+     * 修改表内容
+     */
     @Override
     public void setTable1(int position, boolean isLook, UnitListBean unitListBean) {
         View table_view = getLayoutInflater().inflate(R.layout.table_view, null);
@@ -536,7 +573,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         if (!StringUtils.isBlank(unitListBean.getContent())) {
             contentArray = unitListBean.getContent().split("%%&@");
         }
-        contentFileArray=null;
+        contentFileArray = null;
         if (!StringUtils.isBlank(unitListBean.getContentFile())) {
             contentFileArray = unitListBean.getContentFile().split("%%&@");
         }
@@ -675,7 +712,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                     contentFile.append(contentFileArray[i]).append("%%&@");
                 }
             }
-            if (isLook&&!StringUtils.isBlank(contentFile.toString())) {
+            if (isLook && !StringUtils.isBlank(contentFile.toString())) {
                 conFile = contentFile.toString().substring(0, contentFile.toString().length() - 4);
             } else {
                 conFile = contentFile.toString() + relevantFile;
@@ -701,6 +738,141 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             ToastUtils.getInstance().showTextToast(getActivity(), "保存成功");
             popupWindow.dismiss();
         });
+    }
+
+    /**
+     * 修改表头
+     */
+    boolean isAdd = false;
+
+    @Override
+    public void setTable1(UnitListBean unitListBean) {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.text_box_content_view, null);
+        PopupWindow popupWindow = new PopupWindow(view);
+        popupWindow.setHeight(600);
+        popupWindow.setWidth(600);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+        lp.alpha = 0.7f;
+        getActivity().getWindow().setAttributes(lp);
+
+        popupWindow.showAtLocation(recyclerLayout, Gravity.CENTER, 0, 0);
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp1 = getActivity().getWindow().getAttributes();
+            lp1.alpha = 1f;
+            getActivity().getWindow().setAttributes(lp1);
+        });
+        ListView lv_content = view.findViewById(R.id.lv_content);
+        TextView tv_add = view.findViewById(R.id.tv_add);
+        TextView tv_cancel = view.findViewById(R.id.tv_cancel);
+        TextView tv_save = view.findViewById(R.id.tv_save);
+
+        List<TextLabelBean> textLabelBeans = new ArrayList<>();
+
+
+        String[] labelArray = unitListBean.getText().split("%%&@");
+        for (int i = 0; i < labelArray.length; i++) {
+            TextLabelBean textLabelBean = new TextLabelBean();
+            try {
+                textLabelBean.setLabel(labelArray[i]);
+            } catch (Exception ex) {
+
+            }
+            textLabelBeans.add(textLabelBean);
+        }
+
+        TextBoxContentAdapter textBoxContentAdapter = new TextBoxContentAdapter(getActivity(), textLabelBeans);
+        lv_content.setAdapter(textBoxContentAdapter);
+
+        textBoxContentAdapter.setTextBoxContent(position -> {
+            isAdd = true;
+            textLabelBeans.remove(position);
+            textBoxContentAdapter.notifyDataSetChanged();
+        });
+
+        tv_add.setOnClickListener(view1 -> {
+            isAdd = true;
+            TextLabelBean textLabelBean = new TextLabelBean();
+            textLabelBean.setLabel("null");
+            textLabelBeans.add(textLabelBean);
+            textBoxContentAdapter.notifyDataSetChanged();
+            lv_content.setSelection(lv_content.getBottom());
+        });
+
+        tv_cancel.setOnClickListener(view12 -> {
+            popupWindow.dismiss();
+        });
+
+        tv_save.setOnClickListener(view13 -> {
+            UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+            if (isAdd) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("该操作会清除表格内所有内容，是否继续！");
+                builder.setPositiveButton("是！！", (dialog, which) -> {
+
+                    StringBuffer labelBuffer = new StringBuffer();
+                    for (int i = 0; i < textLabelBeans.size(); i++) {
+                        labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("%%&@");
+                    }
+                    String label = "";
+                    if (!StringUtils.isBlank(labelBuffer.toString())) {
+                        label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 4);
+                    }
+                    UnitListBean unitListBean2 = new UnitListBean(unitListBean.getUId(),
+                            unitListBean.getUuid(),
+                            "",
+                            "",
+                            "",
+                            unitListBean.getId(),
+                            unitListBean.getKeyUuid(),
+                            unitListBean.getLabel(),
+                            unitListBean.getRelevantFile(),
+                            unitListBean.getSx(),
+                            label,
+                            unitListBean.getType(),
+                            unitListBean.getUserName());
+                    unitListBeanDao.update(unitListBean2);
+                    initData();
+                    popupWindow.dismiss();
+
+
+                });
+                builder.setNegativeButton("否", null);
+                builder.show();
+
+
+            } else {
+                StringBuffer labelBuffer = new StringBuffer();
+                for (int i = 0; i < textLabelBeans.size(); i++) {
+                    labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("%%&@");
+                }
+                String label = "";
+                if (!StringUtils.isBlank(labelBuffer.toString())) {
+                    label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 4);
+                }
+                UnitListBean unitListBean2 = new UnitListBean(unitListBean.getUId(),
+                        unitListBean.getUuid(),
+                        unitListBean.getAnswer(),
+                        unitListBean.getContent(),
+                        unitListBean.getContentFile(),
+                        unitListBean.getId(),
+                        unitListBean.getKeyUuid(),
+                        unitListBean.getLabel(),
+                        unitListBean.getRelevantFile(),
+                        unitListBean.getSx(),
+                        label,
+                        unitListBean.getType(),
+                        unitListBean.getUserName());
+                unitListBeanDao.update(unitListBean2);
+                initData();
+                popupWindow.dismiss();
+            }
+
+        });
+
+
     }
 
 
