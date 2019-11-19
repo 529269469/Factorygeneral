@@ -10,18 +10,18 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.factorygeneral.R;
 import com.example.factorygeneral.adapter.GridAdapter;
-import com.example.factorygeneral.adapter.RecycleAdapter;
 import com.example.factorygeneral.adapter.TablePopupAdapter;
+import com.example.factorygeneral.adapter.TextBoxContentAdapter;
 import com.example.factorygeneral.base.BaseFragment;
 import com.example.factorygeneral.base.MyApplication;
 import com.example.factorygeneral.bean.TextLabelBean;
@@ -39,8 +39,6 @@ import com.example.factorygeneral.utils.StringUtils;
 import com.example.factorygeneral.utils.ToastUtils;
 import com.example.factorygeneral.view.MyGridView;
 import com.example.factorygeneral.view.MyListView;
-import com.example.factorygeneral.view.OperationPopupWindow;
-import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ import java.util.Locale;
 import butterknife.BindView;
 
 
-public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBox, InputLayout.IInput, CheckBoxLayout.ICheckBox, TableLayout.ITable {
+public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBox, InputLayout.IInput, CheckBoxLayout.ICheckBox, TableLayout.ITable, AutographLayout.IAutograph {
 
 
     @BindView(R.id.recycler_layout)
@@ -120,6 +118,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                     break;
                 case "autograph":
                     AutographLayout autographLayout = new AutographLayout(getActivity(), unitListBeans.get(i));
+                    autographLayout.setiAutograph(this);
                     recyclerLayout.addView(autographLayout);
                     break;
             }
@@ -136,23 +135,32 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
     private String unitListId;
     private Uri uri;
-
+    private int type;
     @Override
     public void seTextBoxId(String unitListId, View operationView) {
         this.unitListId = unitListId;
+        type=111;
         popuView(operationView);
     }
 
     @Override
     public void setInputId(String unitListId, View operationView) {
         this.unitListId = unitListId;
+        type=222;
         popuView(operationView);
     }
 
     @Override
     public void setCheckBoxId(String unitListId, View operationView) {
         this.unitListId = unitListId;
+        type=333;
         popuView(operationView);
+    }
+
+    @Override
+    public void setAutograph(String unitListId) {
+        this.unitListId = unitListId;
+        inputContentPopup();
     }
 
 
@@ -169,7 +177,6 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         getActivity().getWindow().setAttributes(lp);
         int windowPos[] = calculatePopWindowPos(operationView, view);
 
-
         popupWindow.showAtLocation(operationView, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
         popupWindow.setOnDismissListener(() -> {
             WindowManager.LayoutParams lp1 = getActivity().getWindow().getAttributes();
@@ -180,7 +187,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         TextView tv_img = view.findViewById(R.id.tv_img);
         TextView tv_video = view.findViewById(R.id.tv_video);
         TextView tv_file2 = view.findViewById(R.id.tv_file2);
-
+        TextView tv_content = view.findViewById(R.id.tv_content);
 
         tv_file2.setOnClickListener(view14 -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -208,8 +215,266 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             popupWindow.dismiss();
         });
 
+        tv_content.setOnClickListener(view12 -> {
+            popupWindow.dismiss();
+            switch (type){
+                case 111://多文本
+                    textBoxContentPopup();
+                    break;
+                case 222://文本域
+                    inputContentPopup();
+                    break;
+                case 333://单选
+                    checkBoxContentPopup();
+                    break;
+            }
+
+        });
+
     }
 
+    private void inputContentPopup() {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.input_content_view, null);
+        PopupWindow popupWindow = new PopupWindow(view);
+        popupWindow.setHeight(250);
+        popupWindow.setWidth(500);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+        lp.alpha = 0.7f;
+        getActivity().getWindow().setAttributes(lp);
+
+        popupWindow.showAtLocation(recyclerLayout, Gravity.CENTER, 0, 0);
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp1 = getActivity().getWindow().getAttributes();
+            lp1.alpha = 1f;
+            getActivity().getWindow().setAttributes(lp1);
+        });
+
+        EditText et_text=view.findViewById(R.id.et_text);
+        TextView tv_cancel=view.findViewById(R.id.tv_cancel);
+        TextView tv_save=view.findViewById(R.id.tv_save);
+
+        UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+        List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
+                .where(UnitListBeanDao.Properties.Uuid.eq((String) SPUtils.get(getActivity(), "uuId", "")))
+                .where(UnitListBeanDao.Properties.Id.eq(unitListId))
+                .list();
+
+        et_text.setText(unitListBeans.get(0).getLabel());
+
+        tv_cancel.setOnClickListener(view12 -> {
+            popupWindow.dismiss();
+        });
+
+        tv_save.setOnClickListener(view13 -> {
+
+            UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
+                    unitListBeans.get(0).getUuid(),
+                    unitListBeans.get(0).getAnswer(),
+                    unitListBeans.get(0).getContent(),
+                    unitListBeans.get(0).getContentFile(),
+                    unitListBeans.get(0).getId(),
+                    unitListBeans.get(0).getKeyUuid(),
+                    et_text.getText().toString().trim(),
+                    unitListBeans.get(0).getRelevantFile(),
+                    unitListBeans.get(0).getSx(),
+                    unitListBeans.get(0).getText(),
+                    unitListBeans.get(0).getType(),
+                    unitListBeans.get(0).getUserName());
+            unitListBeanDao.update(unitListBean);
+            initData();
+            popupWindow.dismiss();
+        });
+
+    }
+
+    private void textBoxContentPopup() {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.text_box_content_view, null);
+        PopupWindow popupWindow = new PopupWindow(view);
+        popupWindow.setHeight(600);
+        popupWindow.setWidth(600);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+        lp.alpha = 0.7f;
+        getActivity().getWindow().setAttributes(lp);
+
+        popupWindow.showAtLocation(recyclerLayout, Gravity.CENTER, 0, 0);
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp1 = getActivity().getWindow().getAttributes();
+            lp1.alpha = 1f;
+            getActivity().getWindow().setAttributes(lp1);
+        });
+        ListView lv_content=view.findViewById(R.id.lv_content);
+        TextView tv_add=view.findViewById(R.id.tv_add);
+        TextView tv_cancel=view.findViewById(R.id.tv_cancel);
+        TextView tv_save=view.findViewById(R.id.tv_save);
+
+        List<TextLabelBean> textLabelBeans=new ArrayList<>();
+
+        UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+        List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
+                .where(UnitListBeanDao.Properties.Uuid.eq((String) SPUtils.get(getActivity(), "uuId", "")))
+                .where(UnitListBeanDao.Properties.Id.eq(unitListId))
+                .list();
+
+        String[] labelArray = unitListBeans.get(0).getLabel().split("%%&@");
+        for (int i = 0; i < labelArray.length; i++) {
+            TextLabelBean textLabelBean = new TextLabelBean();
+            try {
+                textLabelBean.setLabel(labelArray[i]);
+            } catch (Exception ex) {
+
+            }
+            textLabelBeans.add(textLabelBean);
+        }
+
+        TextBoxContentAdapter textBoxContentAdapter=new TextBoxContentAdapter(getActivity(),textLabelBeans);
+        lv_content.setAdapter(textBoxContentAdapter);
+
+        tv_add.setOnClickListener(view1 -> {
+            TextLabelBean textLabelBean = new TextLabelBean();
+            textLabelBean.setLabel("null");
+            textLabelBean.setText("null");
+            textLabelBeans.add(textLabelBean);
+            textBoxContentAdapter.notifyDataSetChanged();
+            lv_content.setSelection(lv_content.getBottom());
+        });
+
+        tv_cancel.setOnClickListener(view12 -> {
+            popupWindow.dismiss();
+        });
+
+        tv_save.setOnClickListener(view13 -> {
+
+            StringBuffer labelBuffer = new StringBuffer();
+            StringBuffer textBuffer = new StringBuffer();
+            for (int i = 0; i <textLabelBeans.size() ; i++) {
+                labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("%%&@");
+                textBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getText()) ? "null" : textLabelBeans.get(i).getText()).append("%%&@");
+            }
+            String label="";
+            String text = "";
+            if (!StringUtils.isBlank(labelBuffer.toString())){
+                label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 4);
+                text = textBuffer.toString().substring(0, textBuffer.toString().length() - 4);
+            }
+            UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
+                    unitListBeans.get(0).getUuid(),
+                    unitListBeans.get(0).getAnswer(),
+                    unitListBeans.get(0).getContent(),
+                    unitListBeans.get(0).getContentFile(),
+                    unitListBeans.get(0).getId(),
+                    unitListBeans.get(0).getKeyUuid(),
+                    label,
+                    unitListBeans.get(0).getRelevantFile(),
+                    unitListBeans.get(0).getSx(),
+                    text,
+                    unitListBeans.get(0).getType(),
+                    unitListBeans.get(0).getUserName());
+            unitListBeanDao.update(unitListBean);
+
+            initData();
+            popupWindow.dismiss();
+        });
+
+    }
+
+    //TODO
+    private void checkBoxContentPopup() {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.check_box_content_view, null);
+        PopupWindow popupWindow = new PopupWindow(view);
+        popupWindow.setHeight(600);
+        popupWindow.setWidth(600);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+        lp.alpha = 0.7f;
+        getActivity().getWindow().setAttributes(lp);
+
+        popupWindow.showAtLocation(recyclerLayout, Gravity.CENTER, 0, 0);
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp1 = getActivity().getWindow().getAttributes();
+            lp1.alpha = 1f;
+            getActivity().getWindow().setAttributes(lp1);
+        });
+        EditText et_label=view.findViewById(R.id.et_label);
+        ListView lv_content=view.findViewById(R.id.lv_content);
+        TextView tv_add=view.findViewById(R.id.tv_add);
+        TextView tv_cancel=view.findViewById(R.id.tv_cancel);
+        TextView tv_save=view.findViewById(R.id.tv_save);
+
+        List<TextLabelBean> textLabelBeans=new ArrayList<>();
+
+        UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+        List<UnitListBean> unitListBeans = unitListBeanDao.queryBuilder()
+                .where(UnitListBeanDao.Properties.Uuid.eq((String) SPUtils.get(getActivity(), "uuId", "")))
+                .where(UnitListBeanDao.Properties.Id.eq(unitListId))
+                .list();
+
+        et_label.setText(unitListBeans.get(0).getLabel());
+
+        String[] labelArray = unitListBeans.get(0).getText().split("&&");
+        for (int i = 0; i < labelArray.length; i++) {
+            TextLabelBean textLabelBean = new TextLabelBean();
+            try {
+                textLabelBean.setLabel(labelArray[i]);
+            } catch (Exception ex) {
+
+            }
+            textLabelBeans.add(textLabelBean);
+        }
+
+        TextBoxContentAdapter textBoxContentAdapter=new TextBoxContentAdapter(getActivity(),textLabelBeans);
+        lv_content.setAdapter(textBoxContentAdapter);
+
+        tv_add.setOnClickListener(view1 -> {
+            TextLabelBean textLabelBean = new TextLabelBean();
+            textLabelBean.setLabel("null");
+            textLabelBean.setText("null");
+            textLabelBeans.add(textLabelBean);
+            textBoxContentAdapter.notifyDataSetChanged();
+            lv_content.setSelection(lv_content.getBottom());
+        });
+
+        tv_cancel.setOnClickListener(view12 -> {
+            popupWindow.dismiss();
+        });
+
+        tv_save.setOnClickListener(view13 -> {
+
+            StringBuffer labelBuffer = new StringBuffer();
+            for (int i = 0; i <textLabelBeans.size() ; i++) {
+                labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("&&");
+            }
+            String label="";
+            if (!StringUtils.isBlank(labelBuffer.toString())){
+                label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 2);
+            }
+            UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
+                    unitListBeans.get(0).getUuid(),
+                    unitListBeans.get(0).getAnswer(),
+                    unitListBeans.get(0).getContent(),
+                    unitListBeans.get(0).getContentFile(),
+                    unitListBeans.get(0).getId(),
+                    unitListBeans.get(0).getKeyUuid(),
+                    et_label.getText().toString().trim(),
+                    unitListBeans.get(0).getRelevantFile(),
+                    unitListBeans.get(0).getSx(),
+                    label,
+                    unitListBeans.get(0).getType(),
+                    unitListBeans.get(0).getUserName());
+            unitListBeanDao.update(unitListBean);
+
+            initData();
+            popupWindow.dismiss();
+        });
+
+    }
 
     @Override
     public void setTable1(int position, boolean isLook, UnitListBean unitListBean) {
@@ -271,6 +536,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         if (!StringUtils.isBlank(unitListBean.getContent())) {
             contentArray = unitListBean.getContent().split("%%&@");
         }
+        contentFileArray=null;
         if (!StringUtils.isBlank(unitListBean.getContentFile())) {
             contentFileArray = unitListBean.getContentFile().split("%%&@");
         }
@@ -581,5 +847,6 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         }
         return windowPos;
     }
+
 
 }

@@ -24,11 +24,14 @@ import com.example.factorygeneral.adapter.ModificationAdapter;
 import com.example.factorygeneral.adapter.TbAdapter;
 import com.example.factorygeneral.base.BaseFragment;
 import com.example.factorygeneral.base.MyApplication;
+import com.example.factorygeneral.bean.TextLabelBean;
 import com.example.factorygeneral.greendao.bean.ModuleListBean;
 import com.example.factorygeneral.greendao.bean.UnitListBean;
 import com.example.factorygeneral.greendao.db.ModuleListBeanDao;
 import com.example.factorygeneral.greendao.db.UnitListBeanDao;
+import com.example.factorygeneral.utils.FileUtils;
 import com.example.factorygeneral.utils.SPUtils;
+import com.example.factorygeneral.utils.StringUtils;
 import com.example.factorygeneral.view.ContentViewPager;
 import com.google.android.material.tabs.TabLayout;
 
@@ -170,10 +173,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //确定
         tv_save.setOnClickListener(view -> {
             ModuleListBeanDao moduleListBeanDao = MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
-            listTitle= modificationAdapter.getList();
+            listTitle = modificationAdapter.getList();
 
             for (int i = 0; i < listTitle.size(); i++) {
-                ModuleListBean moduleListBean=new ModuleListBean(listTitle.get(i).getUId(),
+                ModuleListBean moduleListBean = new ModuleListBean(listTitle.get(i).getUId(),
                         listTitle.get(i).getUuid(),
                         listTitle.get(i).getId(),
                         listTitle.get(i).getKeyId(),
@@ -188,22 +191,58 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         });
 
         modificationAdapter.setModDel(position -> {
-            ModuleListBeanDao moduleListBeanDao = MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
-            moduleListBeanDao.deleteByKey(listTitle.get(position).getUId());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("是否将此选项卡删除，删除后不可恢复");
+            builder.setNegativeButton("取消", null);
+            builder.setPositiveButton("确定", (dialogInterface, posss) -> {
 
-            UnitListBeanDao unitListBeanDao=MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
-            List<UnitListBean> unitListBeanList=unitListBeanDao.queryBuilder()
-                    .where(UnitListBeanDao.Properties.Uuid.eq(uuId))
-                    .where(UnitListBeanDao.Properties.KeyUuid.eq(listTitle.get(position).getKeyUuid()))
-                    .list();
-            for (int i = 0; i <unitListBeanList.size() ; i++) {
-                unitListBeanDao.deleteByKey(unitListBeanList.get(i).getUId());
-            }
+                ModuleListBeanDao moduleListBeanDao = MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
+                moduleListBeanDao.deleteByKey(listTitle.get(position).getUId());
+                UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+                List<UnitListBean> unitListBeanList = unitListBeanDao.queryBuilder()
+                        .where(UnitListBeanDao.Properties.Uuid.eq(uuId))
+                        .where(UnitListBeanDao.Properties.KeyUuid.eq(listTitle.get(position).getKeyUuid()))
+                        .list();
+                for (int i = 0; i < unitListBeanList.size(); i++) {
+                    if (!StringUtils.isBlank(unitListBeanList.get(i).getRelevantFile())) {
+                        String[] relevantArray = unitListBeanList.get(i).getRelevantFile().split(",");
+                        for (int j = 0; j < relevantArray.length; j++) {
+                            String[] relevantArray2 = relevantArray[j].split("@%%%@");
+                            try {
+                                FileUtils.delFile(relevantArray2[1]);
+                            } catch (Exception ex) {
 
-            list.remove(position);
-            listTitle.remove(position);
-            tbAdapter.notifyDataSetChanged();
-            modificationWindow.dismiss();
+                            }
+                        }
+                    }
+                    if (!StringUtils.isBlank(unitListBeanList.get(i).getContentFile())) {
+                        String[] contentFileArray = unitListBeanList.get(i).getContentFile().split("%%&@");
+                        if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[position])) {
+                            String[] contentFileArray2 = contentFileArray[position].split(",");
+                            for (int j = 0; j < contentFileArray2.length; j++) {
+                                String[] contentFileArray3 = contentFileArray2[j].split("@%%%@");
+                                try {
+                                    FileUtils.delFile(contentFileArray3[1]);
+                                } catch (Exception ex) {
+
+                                }
+
+                            }
+                        }
+
+                    }
+
+                    unitListBeanDao.deleteByKey(unitListBeanList.get(i).getUId());
+                }
+
+                list.remove(position);
+                listTitle.remove(position);
+                tbAdapter.notifyDataSetChanged();
+                modificationWindow.dismiss();
+                dialogInterface.dismiss();
+            });
+            builder.show();
+
         });
 
     }

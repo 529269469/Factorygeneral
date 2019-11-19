@@ -119,7 +119,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void initView() {
         uuId = getIntent().getStringExtra("uuId");
-        tvTuichu.setText("下厂验收");
 
         ivGenduo.setOnClickListener(this);
         tvOperation.setOnClickListener(this);
@@ -139,6 +138,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         SPUtils.put(this, "userName", menusListBeans.get(0).getUserName());
 
         list.addAll(menusListBeans);
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setCheck(false);
+        }
         list.get(0).setCheck(true);
         titleAdapter = new TitleAdapter(this, list);
         gvOne.setAdapter(titleAdapter);
@@ -147,7 +149,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         homeFragment = new HomeFragment(uuId, list.get(0).getKeyId());
         transaction.replace(R.id.frame, homeFragment);
         transaction.commit();
+        try {
+            tvTuichu.setText(list.get(0).getName());
+        }catch (Exception ex){
 
+        }
         gvOne.setOnItemClickListener((adapterView, view, position, l) -> {
             drawerlayoutDrawer.closeDrawers();
             tvTuichu.setText(list.get(position).getName());

@@ -56,7 +56,6 @@ public class AutographLayout extends LinearLayout {
 
         if (!StringUtils.isBlank(unitListBean.getRelevantFile())){
             String[] textArray=unitListBean.getRelevantFile().split("@%%%@");
-
             try {
                 Glide.with(context)
                         .load(new File(SPUtils.get(context, "PackagePath", "") + File.separator + textArray[1]))
@@ -67,13 +66,13 @@ public class AutographLayout extends LinearLayout {
 
         }
 
-        iv_autograph.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pathPopu(iv_autograph);
+        iv_autograph.setOnClickListener(view12 -> pathPopu(iv_autograph));
+
+        tv_label.setOnClickListener(view1 -> {
+            if (iAutograph!=null){
+                iAutograph.setAutograph(unitListBean.getId());
             }
         });
-
 
     }
 
@@ -156,4 +155,14 @@ public class AutographLayout extends LinearLayout {
 
     }
 
+
+    public interface IAutograph {
+        void setAutograph(String unitListId);
+    }
+
+    private IAutograph iAutograph;
+
+    public void setiAutograph(IAutograph iAutograph) {
+        this.iAutograph = iAutograph;
+    }
 }

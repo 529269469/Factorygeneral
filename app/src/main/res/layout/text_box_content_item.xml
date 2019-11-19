@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_margin="@dimen/padding_5"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/padding_40">
+
+        <EditText
+            android:textSize="@dimen/text_font_12"
+            android:paddingLeft="@dimen/padding_10"
+            android:textColor="@color/color_333333"
+            android:id="@+id/et_text"
+            android:background="@drawable/shape_ed"
+            android:layout_width="@dimen/padding_300"
+            android:layout_height="@dimen/padding_36"/>
+
+        <TextView
+            android:gravity="center"
+            android:background="@drawable/shape_text"
+            android:layout_marginLeft="@dimen/padding_16"
+            android:text="删除"
+            android:textColor="@color/colorAccent"
+            android:id="@+id/tv_del"
+            android:layout_width="@dimen/padding_50"
+            android:layout_height="@dimen/padding_36"/>
+
+    </LinearLayout>
+</LinearLayout>

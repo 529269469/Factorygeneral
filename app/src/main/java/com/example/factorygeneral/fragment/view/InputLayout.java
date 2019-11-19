@@ -58,7 +58,7 @@ public class InputLayout extends LinearLayout {
         tv_text.addTextChangedListener(textWatcher);
 
 
-        tv_label.setText(unitListBean.getLabel() + ":");
+        tv_label.setText(StringUtils.isBlank(unitListBean.getLabel())?"":unitListBean.getLabel()+":");
         tv_text.setText(StringUtils.isBlank(unitListBean.getText())?"":unitListBean.getText());
 
         tv_caozuo.setOnClickListener(new OnClickListener() {
@@ -154,7 +154,7 @@ public class InputLayout extends LinearLayout {
                     unitListBean.getLabel(),
                     unitListBean.getRelevantFile(),
                     unitListBean.getSx(),
-                    StringUtils.isBlank(words) ? "null" : words,
+                    StringUtils.isBlank(words) ? "" : words,
                     unitListBean.getType(),
                     unitListBean.getUserName());
             unitListBeanDao.update(unitListBean2);

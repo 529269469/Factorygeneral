@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
         <ImageView
+            android:visibility="gone"
             android:id="@+id/iv_add"
             android:src="@drawable/add"
             android:layout_marginLeft="@dimen/padding_20"
@@ -22,6 +23,7 @@
             android:layout_height="@dimen/padding_20"/>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/iv_up"
             android:src="@drawable/updata"
             android:layout_marginLeft="@dimen/padding_24"
