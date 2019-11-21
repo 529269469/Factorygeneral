@@ -17,7 +17,7 @@
             android:src="@drawable/danxuan" />
 
         <TextView
-            android:textSize="@dimen/text_font_12"
+            android:textSize="@dimen/text_font_14"
             android:id="@+id/tv_danxuan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

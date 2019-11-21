@@ -6,6 +6,7 @@
 
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/tv_content"
         android:gravity="center"
         android:text="修改"

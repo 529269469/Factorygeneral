@@ -87,7 +87,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         tbAdapter = new TbAdapter(getChildFragmentManager(), listTitle, list);
         vp.setAdapter(tbAdapter);
-        tb.setTabMode(TabLayout.MODE_FIXED);
+        tb.setTabMode(TabLayout.MODE_SCROLLABLE);
         tb.setupWithViewPager(vp);
 
         ivAdd.setOnClickListener(this);
@@ -131,6 +131,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                     list.add(modelFragment);
                     tbAdapter.notifyDataSetChanged();
                     dialogInterface.dismiss();
+                    vp.setCurrentItem(list.size()-1);
+
                 });
                 builder.show();
 
@@ -195,7 +197,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             builder.setTitle("是否将此选项卡删除，删除后不可恢复");
             builder.setNegativeButton("取消", null);
             builder.setPositiveButton("确定", (dialogInterface, posss) -> {
-
                 ModuleListBeanDao moduleListBeanDao = MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
                 moduleListBeanDao.deleteByKey(listTitle.get(position).getUId());
                 UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();

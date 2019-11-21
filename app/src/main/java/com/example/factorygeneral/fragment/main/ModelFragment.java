@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -55,6 +56,8 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
     @BindView(R.id.recycler_layout)
     LinearLayout recyclerLayout;
+    @BindView(R.id.iv_add)
+    ImageView ivAdd;
     private String uuId;
     private String keyUuid;
     private File cameraSavePath;
@@ -63,7 +66,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
     private List<TextLabelBean> gridList;
     private GridAdapter gridAdapter;
     private String[] contentFileArray;
-
+    private List<UnitListBean> list=new ArrayList<>();
     @Override
     protected void initEventAndData() {
         uuId = getArguments().getString("uuId");
@@ -71,6 +74,55 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
         initData();
 
+        ivAdd.setOnClickListener(view -> {
+
+            final String[] gender = new String[]{"新增文本域","新增文本框","新增单选框","新增签名","新增表格"};
+            AlertDialog.Builder builder1=new AlertDialog.Builder(getActivity());
+            builder1.setTitle("请选择你的性别");
+            builder1.setItems(gender, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+                    String type="";
+                    switch (which){
+                        case 0://新增文本域
+                            type="input";
+                            break;
+                        case 1://新增文本框
+                            type="textBox";
+                            break;
+                        case 2://新增单选框
+                            type="checkBox";
+                            break;
+                        case 3://新增签名
+                            type="autograph";
+                            break;
+                        case 4://新增表格
+                            type="table";
+                            break;
+                    }
+
+                    UnitListBean unitListBean=new UnitListBean(null,
+                            uuId,
+                            "null",
+                            "null",
+                            "null",
+                            System.currentTimeMillis()+"",
+                            keyUuid,
+                            "标题",
+                            "null",
+                            list.size()+1+"",
+                            "null",
+                            type,
+                            (String)SPUtils.get(getActivity(),"userName",""));
+                    unitListBeanDao.insert(unitListBean);
+                    initData();
+                }
+            });
+            builder1.show();
+
+
+        });
 
     }
 
@@ -80,53 +132,53 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                 .where(UnitListBeanDao.Properties.Uuid.eq(uuId))
                 .where(UnitListBeanDao.Properties.KeyUuid.eq(keyUuid))
                 .list();
+        list.clear();
         recyclerLayout.removeAllViews();
-
+        list.addAll(unitListBeans);
         List<UnitListBean> unitListBeanList = new ArrayList<>();
-        for (int i = 0; i < unitListBeans.size(); i++) {
-            for (int j = 0; j < unitListBeans.size() - 1 - i; j++) {
-                if (Integer.parseInt(unitListBeans.get(j + 1).getSx()) < Integer.parseInt(unitListBeans.get(j).getSx())) {
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.size() - 1 - i; j++) {
+                if (Integer.parseInt(list.get(j + 1).getSx()) < Integer.parseInt(list.get(j).getSx())) {
                     unitListBeanList.clear();
-                    unitListBeanList.add(unitListBeans.get(j));
-                    unitListBeans.set(j, unitListBeans.get(j + 1));
-                    unitListBeans.set(j + 1, unitListBeanList.get(0));
+                    unitListBeanList.add(list.get(j));
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, unitListBeanList.get(0));
                 }
             }
 
         }
 
 
-        for (int i = 0; i < unitListBeans.size(); i++) {
-            switch (unitListBeans.get(i).getType()) {
+        for (int i = 0; i < list.size(); i++) {
+            switch (list.get(i).getType()) {
                 case "textBox":
-                    TextBoxLayout textBoxLayout = new TextBoxLayout(getActivity(), unitListBeans.get(i));
+                    TextBoxLayout textBoxLayout = new TextBoxLayout(getActivity(), list.get(i));
                     textBoxLayout.setTextBox(this);
                     recyclerLayout.addView(textBoxLayout);
                     break;
                 case "table":
-                    TableLayout tableLayout = new TableLayout(getActivity(), unitListBeans.get(i));
+                    TableLayout tableLayout = new TableLayout(getActivity(), list.get(i));
                     tableLayout.setiTable(this);
                     recyclerLayout.addView(tableLayout);
                     break;
                 case "input":
-                    InputLayout inputLayout = new InputLayout(getActivity(), unitListBeans.get(i));
+                    InputLayout inputLayout = new InputLayout(getActivity(), list.get(i));
                     inputLayout.setiInput(this);
                     recyclerLayout.addView(inputLayout);
                     break;
                 case "checkBox":
-                    CheckBoxLayout checkBoxLayout = new CheckBoxLayout(getActivity(), unitListBeans.get(i));
+                    CheckBoxLayout checkBoxLayout = new CheckBoxLayout(getActivity(), list.get(i));
                     checkBoxLayout.setiCheckBox(this);
                     recyclerLayout.addView(checkBoxLayout);
                     break;
                 case "autograph":
-                    AutographLayout autographLayout = new AutographLayout(getActivity(), unitListBeans.get(i));
+                    AutographLayout autographLayout = new AutographLayout(getActivity(), list.get(i));
                     autographLayout.setiAutograph(this);
                     recyclerLayout.addView(autographLayout);
                     break;
             }
-
-
         }
+
     }
 
     @Override
@@ -283,7 +335,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                 .where(UnitListBeanDao.Properties.Id.eq(unitListId))
                 .list();
 
-        et_text.setText(unitListBeans.get(0).getLabel());
+        et_text.setText(StringUtils.isBlank(unitListBeans.get(0).getLabel())?"":unitListBeans.get(0).getLabel());
 
         tv_cancel.setOnClickListener(view12 -> {
             popupWindow.dismiss();
@@ -445,7 +497,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                 .where(UnitListBeanDao.Properties.Id.eq(unitListId))
                 .list();
 
-        et_label.setText(unitListBeans.get(0).getLabel());
+        et_label.setText(StringUtils.isBlank(unitListBeans.get(0).getLabel())?"":unitListBeans.get(0).getLabel());
 
         String[] labelArray = unitListBeans.get(0).getText().split("&&");
         for (int i = 0; i < labelArray.length; i++) {
@@ -602,6 +654,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                 }
             }
         } else {
+            if (textArray!=null)
             for (int i = 0; i < textArray.length; i++) {
                 TextLabelBean textLabelBean = new TextLabelBean();
                 textLabelBean.setLabel(textArray[i]);
@@ -740,13 +793,14 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         });
     }
 
+
+    boolean isAdd = false;
     /**
      * 修改表头
      */
-    boolean isAdd = false;
-
     @Override
     public void setTable1(UnitListBean unitListBean) {
+        isAdd = false;
         View view = getActivity().getLayoutInflater().inflate(R.layout.text_box_content_view, null);
         PopupWindow popupWindow = new PopupWindow(view);
         popupWindow.setHeight(600);
@@ -764,6 +818,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             lp1.alpha = 1f;
             getActivity().getWindow().setAttributes(lp1);
         });
+        EditText et_label= view.findViewById(R.id.et_label);
         ListView lv_content = view.findViewById(R.id.lv_content);
         TextView tv_add = view.findViewById(R.id.tv_add);
         TextView tv_cancel = view.findViewById(R.id.tv_cancel);
@@ -771,14 +826,14 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
         List<TextLabelBean> textLabelBeans = new ArrayList<>();
 
-
+        et_label.setText(StringUtils.isBlank(unitListBean.getLabel())?"":unitListBean.getLabel());
         String[] labelArray = unitListBean.getText().split("%%&@");
         for (int i = 0; i < labelArray.length; i++) {
             TextLabelBean textLabelBean = new TextLabelBean();
             try {
-                textLabelBean.setLabel(labelArray[i]);
+                textLabelBean.setLabel(StringUtils.isBlank(labelArray[i])?"表头":labelArray[i]);
             } catch (Exception ex) {
-
+                textLabelBean.setLabel("表头");
             }
             textLabelBeans.add(textLabelBean);
         }
@@ -795,7 +850,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         tv_add.setOnClickListener(view1 -> {
             isAdd = true;
             TextLabelBean textLabelBean = new TextLabelBean();
-            textLabelBean.setLabel("null");
+            textLabelBean.setLabel("表头");
             textLabelBeans.add(textLabelBean);
             textBoxContentAdapter.notifyDataSetChanged();
             lv_content.setSelection(lv_content.getBottom());
@@ -806,12 +861,15 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         });
 
         tv_save.setOnClickListener(view13 -> {
+            if (StringUtils.isBlank(et_label.getText().toString().trim())){
+                ToastUtils.getInstance().showTextToast(getActivity(),"请输入标题");
+                return;
+            }
             UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
             if (isAdd) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("该操作会清除表格内所有内容，是否继续！");
                 builder.setPositiveButton("是！！", (dialog, which) -> {
-
                     StringBuffer labelBuffer = new StringBuffer();
                     for (int i = 0; i < textLabelBeans.size(); i++) {
                         labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("%%&@");

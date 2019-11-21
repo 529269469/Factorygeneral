@@ -6,23 +6,16 @@
     android:orientation="vertical"
     tools:context=".fragment.main.HomeFragment">
 
-    <LinearLayout
+    <RelativeLayout
         android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="@dimen/padding_40">
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tb"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
-        <ImageView
-            android:visibility="gone"
-            android:id="@+id/iv_add"
-            android:src="@drawable/add"
-            android:layout_marginLeft="@dimen/padding_20"
-            android:layout_width="@dimen/padding_20"
-            android:layout_height="@dimen/padding_20"/>
+
 
         <ImageView
+            android:layout_marginRight="@dimen/padding_16"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
             android:visibility="gone"
             android:id="@+id/iv_up"
             android:src="@drawable/updata"
@@ -30,7 +23,23 @@
             android:layout_width="@dimen/padding_20"
             android:layout_height="@dimen/padding_20"/>
 
-    </LinearLayout>
+        <ImageView
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/iv_up"
+            android:visibility="gone"
+            android:id="@+id/iv_add"
+            android:src="@drawable/add"
+            android:layout_marginLeft="@dimen/padding_20"
+            android:layout_width="@dimen/padding_20"
+            android:layout_height="@dimen/padding_20"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:layout_toLeftOf="@id/iv_add"
+            android:id="@+id/tb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/vp"

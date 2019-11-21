@@ -9,19 +9,19 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:textSize="@dimen/text_font_12"
+            android:textSize="@dimen/text_font_14"
             android:paddingLeft="@dimen/padding_10"
             android:textColor="@color/color_333333"
             android:layout_centerVertical="true"
             android:id="@+id/et_text"
-            android:layout_marginRight="@dimen/padding_100"
+            android:layout_marginRight="@dimen/padding_300"
             android:layout_alignParentRight="true"
             android:background="@drawable/shape_ed"
             android:layout_width="600dp"
-            android:layout_height="@dimen/padding_36"/>
+            android:layout_height="@dimen/padding_40"/>
 
         <TextView
-            android:textSize="@dimen/text_font_12"
+            android:textSize="@dimen/text_font_14"
             android:textColor="@color/color_333333"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/padding_16"

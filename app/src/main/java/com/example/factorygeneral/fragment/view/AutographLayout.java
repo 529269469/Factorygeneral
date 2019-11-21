@@ -65,6 +65,7 @@ public class AutographLayout extends LinearLayout {
             }
 
         }
+//        iv_autograph.setImageResource(R.drawable.abc);
 
         iv_autograph.setOnClickListener(view12 -> pathPopu(iv_autograph));
 
@@ -91,7 +92,7 @@ public class AutographLayout extends LinearLayout {
         WindowManager.LayoutParams lp = MyApplication.mContext.getWindow().getAttributes();
         lp.alpha = 0.7f;
         MyApplication.mContext.getWindow().setAttributes(lp);
-        popupWindow.showAtLocation(iv, Gravity.TOP, 0, 80);
+        popupWindow.showAtLocation(iv, Gravity.CENTER, 0, 0);
 
         popupWindow.setOnDismissListener(() -> {
             WindowManager.LayoutParams lp1 = MyApplication.mContext.getWindow().getAttributes();

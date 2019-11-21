@@ -64,7 +64,7 @@ public class TableLayout extends LinearLayout {
         tv_label = view.findViewById(R.id.tv_label);
         gv_label = view.findViewById(R.id.gv_label);
 
-        tv_label.setText(unitListBean.getLabel());
+        tv_label.setText(StringUtils.isBlank(unitListBean.getLabel())?"":unitListBean.getLabel());
 
         textArray = unitListBean.getText().split("%%&@");
         for (int i = 0; i < textArray.length; i++) {

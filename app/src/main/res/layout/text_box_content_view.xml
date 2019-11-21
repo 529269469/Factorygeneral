@@ -37,7 +37,18 @@
                 android:layout_height="@dimen/padding_36"/>
         </LinearLayout>
 
+        <EditText
+            android:layout_marginTop="@dimen/padding_10"
+            android:paddingLeft="@dimen/padding_5"
+            android:background="@drawable/shape_ed"
+            android:hint="请输入标题"
+            android:id="@+id/et_label"
+            android:layout_width="@dimen/padding_300"
+            android:layout_height="@dimen/padding_40"/>
+
         <TextView
+            android:layout_marginTop="@dimen/padding_10"
+            android:layout_below="@id/et_label"
             android:id="@+id/tv_add"
             android:textColor="@color/color_5398F7"
             android:gravity="center"
@@ -47,7 +58,7 @@
             android:layout_height="@dimen/padding_36"/>
 
         <ListView
-            android:layout_marginTop="@dimen/padding_40"
+            android:layout_below="@id/tv_add"
             android:layout_marginBottom="@dimen/padding_50"
             android:divider="@color/color_tran"
             android:id="@+id/lv_content"

@@ -104,21 +104,22 @@ public class TextBoxAdapter extends BaseAdapter {
                             .where(UnitListBeanDao.Properties.Uuid.eq((String) SPUtils.get(context, "uuId", "")))
                             .where(UnitListBeanDao.Properties.Id.eq(unitListId))
                             .list();
-
-                    UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
-                            unitListBeans.get(0).getUuid(),
-                            unitListBeans.get(0).getAnswer(),
-                            unitListBeans.get(0).getContent(),
-                            unitListBeans.get(0).getContentFile(),
-                            unitListBeans.get(0).getId(),
-                            unitListBeans.get(0).getKeyUuid(),
-                            label,
-                            unitListBeans.get(0).getRelevantFile(),
-                            unitListBeans.get(0).getSx(),
-                            text,
-                            unitListBeans.get(0).getType(),
-                            unitListBeans.get(0).getUserName());
-                    unitListBeanDao.update(unitListBean);
+                    if (unitListBeans!=null&&!unitListBeans.isEmpty()){
+                        UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
+                                unitListBeans.get(0).getUuid(),
+                                unitListBeans.get(0).getAnswer(),
+                                unitListBeans.get(0).getContent(),
+                                unitListBeans.get(0).getContentFile(),
+                                unitListBeans.get(0).getId(),
+                                unitListBeans.get(0).getKeyUuid(),
+                                label,
+                                unitListBeans.get(0).getRelevantFile(),
+                                unitListBeans.get(0).getSx(),
+                                text,
+                                unitListBeans.get(0).getType(),
+                                unitListBeans.get(0).getUserName());
+                        unitListBeanDao.update(unitListBean);
+                    }
 
 
                 }
