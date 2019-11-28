@@ -22,8 +22,6 @@ import com.example.factorygeneral.net.MyCallBack;
 import com.example.factorygeneral.net.URLS;
 import com.example.factorygeneral.utils.StringUtils;
 import com.example.factorygeneral.utils.ToastUtils;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.Callback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +32,6 @@ import butterknife.BindView;
 import me.weyye.hipermission.HiPermission;
 import me.weyye.hipermission.PermissionCallback;
 import me.weyye.hipermission.PermissionItem;
-import okhttp3.Call;
-import okhttp3.Response;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
@@ -98,7 +94,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_setup:
-                startActivity(SettingActivity.openIntent(this));
+
                 break;
             case R.id.ll_checklist:
                 startActivity(ChecklistActivity.openIntent(this));

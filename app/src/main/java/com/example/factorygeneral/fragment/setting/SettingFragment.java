@@ -18,7 +18,13 @@ import com.example.factorygeneral.adapter.PacketAdapter;
 import com.example.factorygeneral.base.BaseFragment;
 import com.example.factorygeneral.base.MyApplication;
 import com.example.factorygeneral.greendao.bean.MenusListBean;
+import com.example.factorygeneral.greendao.bean.ModuleListBean;
+import com.example.factorygeneral.greendao.bean.UnitListBean;
 import com.example.factorygeneral.greendao.db.MenusListBeanDao;
+import com.example.factorygeneral.greendao.db.ModuleListBeanDao;
+import com.example.factorygeneral.greendao.db.UnitListBeanDao;
+import com.example.factorygeneral.utils.FileUtils;
+import com.example.factorygeneral.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +46,15 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     TextView tvType2;
     private PacketAdapter packetAdapter;
     private List<MenusListBean> list = new ArrayList<>();
+    private String uuId;
 
     @Override
     protected void initEventAndData() {
-
+        uuId= getArguments().getString("uuId");
         MenusListBeanDao menusListBeanDao= MyApplication.getInstances().getMenusDaoSession().getMenusListBeanDao();
-        List<MenusListBean> modifyBeans=menusListBeanDao.loadAll();
+        List<MenusListBean> modifyBeans=menusListBeanDao.queryBuilder()
+                .where(MenusListBeanDao.Properties.Uuid.eq(uuId))
+                .list();
 
         list.addAll(modifyBeans);
         packetAdapter = new PacketAdapter(getActivity(), list);
@@ -64,6 +73,58 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     MenusListBeanDao menusListBeanDao= MyApplication.getInstances().getMenusDaoSession().getMenusListBeanDao();
+
+                    ModuleListBeanDao moduleListBeanDao=MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
+                    List<ModuleListBean> moduleListBeans=moduleListBeanDao.queryBuilder()
+                            .where(ModuleListBeanDao.Properties.Uuid.eq(uuId))
+                            .where(ModuleListBeanDao.Properties.KeyId.eq(list.get(position).getKeyId()))
+                            .list();
+                    for (int p = 0; p <moduleListBeans.size() ; p++) {
+                        UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+                        List<UnitListBean> unitListBeanList = unitListBeanDao.queryBuilder()
+                                .where(UnitListBeanDao.Properties.Uuid.eq(uuId))
+                                .where(UnitListBeanDao.Properties.KeyUuid.eq(moduleListBeans.get(p).getKeyUuid()))
+                                .list();
+                        for (int i = 0; i < unitListBeanList.size(); i++) {
+                            if (!StringUtils.isBlank(unitListBeanList.get(i).getRelevantFile())) {
+                                String[] relevantArray = unitListBeanList.get(i).getRelevantFile().split(",");
+                                for (int j = 0; j < relevantArray.length; j++) {
+                                    String[] relevantArray2 = relevantArray[j].split("@%%%@");
+                                    try {
+                                        FileUtils.delFile(relevantArray2[1]);
+                                    } catch (Exception ex) {
+
+                                    }
+                                }
+                            }
+                            if (!StringUtils.isBlank(unitListBeanList.get(i).getContentFile())) {
+                                String[] contentFileArray = unitListBeanList.get(i).getContentFile().split("%%&@");
+                                for (int k = 0; k < contentFileArray.length; k++) {
+                                    if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[k])) {
+                                        String[] contentFileArray2 = contentFileArray[k].split(",");
+                                        for (int j = 0; j < contentFileArray2.length; j++) {
+                                            String[] contentFileArray3 = contentFileArray2[j].split("@%%%@");
+                                            try {
+                                                FileUtils.delFile(contentFileArray3[1]);
+                                            } catch (Exception ex) {
+
+                                            }
+
+                                        }
+                                    }
+                                }
+
+
+                            }
+
+                            unitListBeanDao.deleteByKey(unitListBeanList.get(i).getUId());
+                        }
+
+
+
+
+                    }
+
                     menusListBeanDao.deleteByKey(list.get(position).getUId());
                     list.remove(position);
                     packetAdapter.notifyDataSetChanged();
@@ -93,9 +154,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         switch (view.getId()) {
             case R.id.tv_add:
                 MenusListBeanDao menusListBeanDao= MyApplication.getInstances().getMenusDaoSession().getMenusListBeanDao();
-                MenusListBean modifyBean=new MenusListBean(null,false,
-                        list.get(0).getId(),
-                        list.get(0).getKeyId(),
+                MenusListBean modifyBean=new MenusListBean(null,
+                        false,
+                        System.currentTimeMillis()+"",
+                        System.currentTimeMillis()+"123",
                         etType.getText().toString().trim(),
                         list.get(0).getUserName(),
                         list.get(0).getUuid());
@@ -147,7 +209,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
 
             MenusListBeanDao menusListBeanDao1= MyApplication.getInstances().getMenusDaoSession().getMenusListBeanDao();
-            List<MenusListBean> modifyBeanList1=menusListBeanDao1.loadAll();
+            List<MenusListBean> modifyBeanList1=menusListBeanDao1.queryBuilder()
+                    .where(MenusListBeanDao.Properties.Uuid.eq(uuId))
+                    .list();
             list.clear();
             list.addAll(modifyBeanList1);
             packetAdapter.notifyDataSetChanged();

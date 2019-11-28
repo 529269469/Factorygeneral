@@ -132,7 +132,7 @@ public class TextBoxAdapter extends BaseAdapter {
             viewHolder.etText.setTag(i);
         }
 
-        viewHolder.tvText.setText(list.get(i).getLabel() + ":");
+        viewHolder.tvText.setText(StringUtils.isBlank(list.get(i).getLabel())?":":list.get(i).getLabel() + ":");
         viewHolder.etText.setText(StringUtils.isBlank(list.get(i).getText()) ? "" : list.get(i).getText());
 
         return view;

@@ -70,11 +70,23 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 //        uuId = getArguments().getString("uuId");
 //        keyId = getArguments().getString("keyId");
 
+        tbAdapter = new TbAdapter(getChildFragmentManager(), listTitle, list);
+        vp.setAdapter(tbAdapter);
+        tb.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tb.setupWithViewPager(vp);
+        initData();
+        ivAdd.setOnClickListener(this);
+        ivUp.setOnClickListener(this);
+    }
+
+    private void initData() {
         ModuleListBeanDao moduleListBeanDao = MyApplication.getInstances().getModuleDaoSession().getModuleListBeanDao();
         List<ModuleListBean> moduleListBeans = moduleListBeanDao.queryBuilder()
                 .where(ModuleListBeanDao.Properties.Uuid.eq(uuId))
                 .where(ModuleListBeanDao.Properties.KeyId.eq(keyId))
                 .list();
+        listTitle.clear();
+        list.clear();
         for (int i = 0; i < moduleListBeans.size(); i++) {
             listTitle.add(moduleListBeans.get(i));
             ModelFragment modelFragment = new ModelFragment();
@@ -84,15 +96,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             modelFragment.setArguments(bundle);
             list.add(modelFragment);
         }
-
-        tbAdapter = new TbAdapter(getChildFragmentManager(), listTitle, list);
-        vp.setAdapter(tbAdapter);
-        tb.setTabMode(TabLayout.MODE_SCROLLABLE);
-        tb.setupWithViewPager(vp);
-
-        ivAdd.setOnClickListener(this);
-        ivUp.setOnClickListener(this);
+        tbAdapter.notifyDataSetChanged();
     }
+
 
     @Override
     protected int getLayoutId() {
@@ -218,16 +224,18 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                     }
                     if (!StringUtils.isBlank(unitListBeanList.get(i).getContentFile())) {
                         String[] contentFileArray = unitListBeanList.get(i).getContentFile().split("%%&@");
-                        if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[position])) {
-                            String[] contentFileArray2 = contentFileArray[position].split(",");
-                            for (int j = 0; j < contentFileArray2.length; j++) {
-                                String[] contentFileArray3 = contentFileArray2[j].split("@%%%@");
-                                try {
-                                    FileUtils.delFile(contentFileArray3[1]);
-                                } catch (Exception ex) {
+                        for (int k = 0; k < contentFileArray.length; k++) {
+                            if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[k])) {
+                                String[] contentFileArray2 = contentFileArray[k].split(",");
+                                for (int j = 0; j < contentFileArray2.length; j++) {
+                                    String[] contentFileArray3 = contentFileArray2[j].split("@%%%@");
+                                    try {
+                                        FileUtils.delFile(contentFileArray3[1]);
+                                    } catch (Exception ex) {
+
+                                    }
 
                                 }
-
                             }
                         }
 
@@ -236,9 +244,13 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                     unitListBeanDao.deleteByKey(unitListBeanList.get(i).getUId());
                 }
 
-                list.remove(position);
-                listTitle.remove(position);
-                tbAdapter.notifyDataSetChanged();
+//                list.remove(position);
+//                listTitle.remove(position);
+//                tbAdapter.reMoveAll();
+//                tbAdapter.notifyDataSetChanged();
+                if (homenotify!=null){
+                    homenotify.setHome(uuId,keyId);
+                }
                 modificationWindow.dismiss();
                 dialogInterface.dismiss();
             });
@@ -246,5 +258,15 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         });
 
+    }
+
+    public interface Homenotify{
+        void setHome(String uuId,String keyId);
+    }
+
+    private Homenotify homenotify;
+
+    public void setHomenotify(Homenotify homenotify) {
+        this.homenotify = homenotify;
     }
 }

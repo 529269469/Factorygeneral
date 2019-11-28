@@ -60,7 +60,7 @@ import java.util.List;
 
 import butterknife.BindView;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, HomeFragment.Homenotify {
     @BindView(R.id.frame)
     FrameLayout frame;
     @BindView(R.id.tv_daochu)
@@ -115,11 +115,47 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<MenusListBean> list = new ArrayList<>();
 
     private FragmentTransaction transaction;
+    private boolean isResume=false;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (titleAdapter != null&&isResume) {
+            isResume=false;
+            MenusListBeanDao menusListBeanDao = MyApplication.getInstances().getMenusDaoSession().getMenusListBeanDao();
+            List<MenusListBean> menusListBeans = menusListBeanDao.queryBuilder()
+                    .where(MenusListBeanDao.Properties.Uuid.eq(uuId))
+                    .list();
+            list.clear();
+            list.addAll(menusListBeans);
+            for (int i = 0; i < list.size(); i++) {
+                list.get(i).setCheck(false);
+            }
+            list.get(0).setCheck(true);
+            titleAdapter.notifyDataSetChanged();
+            transaction = getSupportFragmentManager().beginTransaction();
+            homeFragment = new HomeFragment(uuId, list.get(0).getKeyId());
+            homeFragment.setHomenotify(this);
+            transaction.replace(R.id.frame, homeFragment);
+            transaction.commit();
+            try {
+                tvTuichu.setText(list.get(0).getName());
+            } catch (Exception ex) {
+
+            }
+        }
+    }
+    @Override
+    public void setHome(String uuId2, String keyId) {
+        transaction = getSupportFragmentManager().beginTransaction();
+        homeFragment = new HomeFragment(uuId2, keyId);
+        transaction.replace(R.id.frame, homeFragment);
+        transaction.commit();
+    }
+
 
     @Override
     protected void initView() {
         uuId = getIntent().getStringExtra("uuId");
-
         ivGenduo.setOnClickListener(this);
         tvOperation.setOnClickListener(this);
         tvDaochu.setOnClickListener(this);
@@ -147,11 +183,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         transaction = getSupportFragmentManager().beginTransaction();
         homeFragment = new HomeFragment(uuId, list.get(0).getKeyId());
+        homeFragment.setHomenotify(this);
         transaction.replace(R.id.frame, homeFragment);
         transaction.commit();
         try {
             tvTuichu.setText(list.get(0).getName());
-        }catch (Exception ex){
+        } catch (Exception ex) {
 
         }
         gvOne.setOnItemClickListener((adapterView, view, position, l) -> {
@@ -195,7 +232,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 setDaochu();
                 break;
             case R.id.tv_daochu:
-                startActivity(SettingActivity.openIntent(this));
+                isResume=true;
+                startActivity(SettingActivity.openIntent(this, uuId));
                 break;
         }
     }
@@ -207,7 +245,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         builder.setPositiveButton("是！！", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread(){
+                new Thread() {
                     @Override
                     public void run() {
                         super.run();
@@ -431,6 +469,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         }
     }
+
 
 
 }

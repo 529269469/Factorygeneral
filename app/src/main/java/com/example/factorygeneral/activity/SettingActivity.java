@@ -8,13 +8,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.factorygeneral.R;
-import com.example.factorygeneral.adapter.TitleAdapter;
 import com.example.factorygeneral.adapter.TitleSetAdapter;
 import com.example.factorygeneral.base.BaseActivity;
 import com.example.factorygeneral.bean.TitleBean;
@@ -25,16 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class SettingActivity extends BaseActivity {
 
     @BindView(R.id.lv_setting)
     ListView lvSetting;
 
-
-    public static Intent openIntent(Context context) {
+    private String uuId;
+    public static Intent openIntent(Context context, String uuId) {
         Intent intent = new Intent(context, SettingActivity.class);
+        intent.putExtra("uuId",uuId);
         return intent;
     }
 
@@ -45,6 +43,7 @@ public class SettingActivity extends BaseActivity {
     private SettingFragment settingFragment;
     @Override
     protected void initView() {
+        uuId=getIntent().getStringExtra("uuId");
         list.add(new TitleBean("频道设置"));
         list.get(0).setCheck(true);
         titleAdapter = new TitleSetAdapter(this, list);
@@ -52,6 +51,9 @@ public class SettingActivity extends BaseActivity {
 
         transaction = getSupportFragmentManager().beginTransaction();
         settingFragment = new SettingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("uuId", uuId);
+        settingFragment.setArguments(bundle);
         transaction.replace(R.id.fl_setting, settingFragment);
         transaction.commit();
 

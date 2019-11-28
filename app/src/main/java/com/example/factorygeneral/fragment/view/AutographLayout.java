@@ -15,6 +15,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.factorygeneral.R;
@@ -72,6 +74,22 @@ public class AutographLayout extends LinearLayout {
         tv_label.setOnClickListener(view1 -> {
             if (iAutograph!=null){
                 iAutograph.setAutograph(unitListBean.getId());
+            }
+        });
+
+        tv_label.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("是否删除此模块");
+                builder.setPositiveButton("是！！", (dialog, which) -> {
+                    if (iAutograph!=null){
+                        iAutograph.setDelAutograph(unitListBean);
+                    }
+                });
+                builder.setNegativeButton("否", null);
+                builder.show();
+                return true;
             }
         });
 
@@ -159,6 +177,7 @@ public class AutographLayout extends LinearLayout {
 
     public interface IAutograph {
         void setAutograph(String unitListId);
+        void setDelAutograph(UnitListBean unitListBean);
     }
 
     private IAutograph iAutograph;

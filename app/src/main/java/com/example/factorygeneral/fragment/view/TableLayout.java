@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.example.factorygeneral.R;
 import com.example.factorygeneral.adapter.GridAdapter;
 import com.example.factorygeneral.adapter.TableAdapter;
@@ -114,12 +116,31 @@ public class TableLayout extends LinearLayout {
             }
         });
 
+        tv_label.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("是否删除此模块");
+                builder.setPositiveButton("是！！", (dialog, which) -> {
+                    if (iTable!=null){
+                        iTable.setDelTable(unitListBean);
+                    }
+
+                });
+                builder.setNegativeButton("否", null);
+                builder.show();
+
+                return true;
+            }
+        });
+
     }
 
 
     public interface ITable{
         void setTable1(int position, boolean isLook,UnitListBean unitListBean);
         void setTable1(UnitListBean unitListBean);
+        void setDelTable(UnitListBean unitListBean);
     }
 
     private ITable iTable;

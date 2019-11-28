@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.factorygeneral.R;
 import com.example.factorygeneral.bean.TitleBean;
+import com.example.factorygeneral.utils.StringUtils;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class OptionsAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        viewHolder.tvDanxuan.setText(list.get(i).getTitle());
+        viewHolder.tvDanxuan.setText(StringUtils.isBlank(list.get(i).getTitle())?"":list.get(i).getTitle());
 
         if (list.get(i).isCheck()){
             viewHolder.ivDanxuan.setImageResource(R.drawable.danxuan2);
