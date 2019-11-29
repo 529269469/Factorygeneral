@@ -14,7 +14,7 @@
         <ImageView
             android:layout_alignParentRight="true"
             android:background="@drawable/shape_gray_square_bg"
-            android:layout_marginRight="630dp"
+            android:layout_marginRight="700dp"
             android:scaleType="fitXY"
             android:id="@+id/iv_autograph"
             android:layout_width="@dimen/padding_200"
@@ -29,6 +29,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <TextView
+            android:layout_alignParentRight="true"
+            android:id="@+id/tv_caozuo"
+            android:gravity="center"
+            android:textColor="@color/color_5398F7"
+            android:text="操作"
+            android:layout_marginRight="@dimen/padding_10"
+            android:layout_gravity="right"
+            android:background="@drawable/shape_text"
+            android:layout_width="@dimen/padding_60"
+            android:layout_height="@dimen/padding_30"/>
 
     </RelativeLayout>
 

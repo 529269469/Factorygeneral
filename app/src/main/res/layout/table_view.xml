@@ -77,6 +77,16 @@
                 android:layout_height="@dimen/padding_36"/>
 
             <TextView
+                android:layout_marginLeft="@dimen/padding_60"
+                android:id="@+id/tv_del"
+                android:textColor="@color/colorAccent"
+                android:gravity="center"
+                android:text="删除"
+                android:background="@drawable/shape_text"
+                android:layout_width="@dimen/padding_60"
+                android:layout_height="@dimen/padding_36"/>
+
+            <TextView
                 android:id="@+id/tv_save"
                 android:layout_marginLeft="@dimen/padding_60"
                 android:textColor="@color/color_5398F7"

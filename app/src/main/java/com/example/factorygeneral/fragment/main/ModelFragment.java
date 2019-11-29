@@ -76,7 +76,6 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         initData();
 
         ivAdd.setOnClickListener(view -> {
-
             final String[] gender = new String[]{"新增文本域", "新增文本框", "新增单选框", "新增签名", "新增表格"};
             AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
             builder1.setTitle("请选择");
@@ -103,16 +102,22 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                             break;
                     }
 
+                    int sx=0;
+                    try {
+                        sx=Integer.parseInt(list.get(list.size()-1).getSx());
+                    }catch (Exception ex){
+
+                    }
                     UnitListBean unitListBean = new UnitListBean(null,
                             uuId,
-                            "",
+                            type.equals("table")?"100":"",
                             "",
                             "",
                             System.currentTimeMillis() + "",
                             keyUuid,
                             "标题",
                             "",
-                            list.size() + 1 + "",
+                            sx+ 1 + "",
                             "",
                             type,
                             (String) SPUtils.get(getActivity(), "userName", ""));
@@ -405,7 +410,10 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         });
 
         tv_save.setOnClickListener(view13 -> {
-
+            if (StringUtils.isBlank(et_text.getText().toString().trim())) {
+                ToastUtils.getInstance().showTextToast(getActivity(), "标题不能为空");
+                return;
+            }
             UnitListBean unitListBean = new UnitListBean(unitListBeans.get(0).getUId(),
                     unitListBeans.get(0).getUuid(),
                     unitListBeans.get(0).getAnswer(),
@@ -451,6 +459,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         TextView tv_add = view.findViewById(R.id.tv_add);
         TextView tv_cancel = view.findViewById(R.id.tv_cancel);
         TextView tv_save = view.findViewById(R.id.tv_save);
+        EditText et_label = view.findViewById(R.id.et_label);
+
+        et_label.setVisibility(View.GONE);
 
         List<TextLabelBean> textLabelBeans = new ArrayList<>();
 
@@ -658,7 +669,9 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
         TextView tv_file = table_view.findViewById(R.id.tv_file);
         TextView tv_photo = table_view.findViewById(R.id.tv_photo);
         TextView tv_video = table_view.findViewById(R.id.tv_video);
+        TextView tv_del = table_view.findViewById(R.id.tv_del);
 
+        tv_del.setVisibility(View.VISIBLE);
         tv_file.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
@@ -721,6 +734,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                 }
             }
         } else {
+            tv_del.setVisibility(View.GONE);
             if (textArray != null)
                 for (int i = 0; i < textArray.length; i++) {
                     TextLabelBean textLabelBean = new TextLabelBean();
@@ -743,6 +757,68 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
             gridAdapter.notifyDataSetChanged();
         });
 
+        tv_del.setOnClickListener(view -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("是否删除此行信息");
+            builder.setPositiveButton("是！！", (dialog, which) -> {
+
+                StringBuffer content = new StringBuffer();
+                if (contentArray != null) {
+                    for (int i = 0; i < contentArray.length; i++) {
+                        if (i != position) {
+                            content.append(contentArray[i]).append("%%&@");
+                        }
+                    }
+                }
+                String text = "null";
+                if (!StringUtils.isBlank(content.toString())) {
+                    text = content.toString().substring(0, content.toString().length() - 4);
+                }
+
+                if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[position])) {
+                    String[] contentFiledel2 = contentFileArray[position].split(",");
+                    for (int i = 0; i < contentFiledel2.length; i++) {
+                        String[] contentFileArray3 = contentFiledel2[i].split("@%%%@");
+                        FileUtils.delFile((String) SPUtils.get(getActivity(), "PackagePath", "") + File.separator + contentFileArray3[1]);
+                    }
+                }
+
+                String conFile = "null";
+                StringBuffer contentFile = new StringBuffer();
+                if (contentFileArray != null) {
+                    for (int i = 0; i < contentFileArray.length; i++) {
+                        if (i != position) {
+                            contentFile.append(contentFileArray[i]).append("%%&@");
+                        }
+                    }
+                }
+                if (!StringUtils.isBlank(contentFile.toString())) {
+                    conFile = contentFile.toString().substring(0, contentFile.toString().length() - 4);
+                }
+                UnitListBeanDao unitListBeanDao = MyApplication.getInstances().getUnitDaoSession().getUnitListBeanDao();
+                UnitListBean unitListBean2 = new UnitListBean(unitListBean.getUId(),
+                        unitListBean.getUuid(),
+                        unitListBean.getAnswer(),
+                        text,
+                        conFile,
+                        unitListBean.getId(),
+                        unitListBean.getKeyUuid(),
+                        unitListBean.getLabel(),
+                        unitListBean.getRelevantFile(),
+                        unitListBean.getSx(),
+                        unitListBean.getText(),
+                        unitListBean.getType(),
+                        unitListBean.getUserName());
+                unitListBeanDao.update(unitListBean2);
+
+                initData();
+                ToastUtils.getInstance().showTextToast(getActivity(), "删除成功");
+                popupWindow.dismiss();
+            });
+            builder.setNegativeButton("否", null);
+            builder.show();
+
+        });
 
         tv_cancel.setOnClickListener(view -> {
             popupWindow.dismiss();
@@ -968,12 +1044,19 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                 builder.setTitle("该操作会清除表格内所有内容，是否继续！");
                 builder.setPositiveButton("是！！", (dialog, which) -> {
                     StringBuffer labelBuffer = new StringBuffer();
+
+                    StringBuffer answerBuffer = new StringBuffer();
                     for (int i = 0; i < textLabelBeans.size(); i++) {
+                        answerBuffer.append(100/textLabelBeans.size()).append("%%&@");
                         labelBuffer.append(StringUtils.isBlank(textLabelBeans.get(i).getLabel()) ? "null" : textLabelBeans.get(i).getLabel()).append("%%&@");
                     }
                     String label = "";
+                    String answer="100";
                     if (!StringUtils.isBlank(labelBuffer.toString())) {
                         label = labelBuffer.toString().substring(0, labelBuffer.toString().length() - 4);
+                    }
+                    if (!StringUtils.isBlank(answerBuffer.toString())) {
+                        answer = answerBuffer.toString().substring(0, answerBuffer.toString().length() - 4);
                     }
 
                     if (!StringUtils.isBlank(unitListBean.getContentFile())) {
@@ -997,7 +1080,7 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
                     UnitListBean unitListBean2 = new UnitListBean(unitListBean.getUId(),
                             unitListBean.getUuid(),
-                            "",
+                            answer,
                             "",
                             "",
                             unitListBean.getId(),
@@ -1011,7 +1094,6 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
                     unitListBeanDao.update(unitListBean2);
                     initData();
                     popupWindow.dismiss();
-
 
                 });
                 builder.setNegativeButton("否", null);
