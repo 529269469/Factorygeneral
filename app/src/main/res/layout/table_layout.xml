@@ -44,7 +44,7 @@
 
     <View
         android:layout_marginTop="@dimen/padding_20"
-        android:background="@color/color_333333"
+        android:background="@color/color_D0D0D0"
         android:layout_width="match_parent"
         android:layout_height="@dimen/padding_1"/>
 

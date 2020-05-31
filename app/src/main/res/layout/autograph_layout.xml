@@ -14,10 +14,10 @@
         <ImageView
             android:layout_alignParentRight="true"
             android:background="@drawable/shape_gray_square_bg"
-            android:layout_marginRight="700dp"
+            android:layout_marginRight="430dp"
             android:scaleType="fitXY"
             android:id="@+id/iv_autograph"
-            android:layout_width="@dimen/padding_200"
+            android:layout_width="266dp"
             android:layout_height="@dimen/padding_100" />
 
         <TextView
@@ -45,7 +45,7 @@
 
     <View
         android:layout_marginTop="@dimen/padding_20"
-        android:background="@color/color_333333"
+        android:background="@color/color_D0D0D0"
         android:layout_width="match_parent"
         android:layout_height="@dimen/padding_1"/>
 </LinearLayout>

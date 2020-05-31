@@ -25,7 +25,7 @@
 
         <com.example.factorygeneral.view.MyGridView
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/padding_300"
+            android:layout_marginRight="@dimen/padding_100"
             android:layout_toLeftOf="@id/tv_caozuo"
             android:numColumns="5"
             android:id="@+id/gv_text"
@@ -44,7 +44,7 @@
     </RelativeLayout>
 
     <com.example.factorygeneral.view.MyGridView
-        android:layout_marginRight="@dimen/padding_300"
+        android:layout_marginRight="@dimen/padding_100"
         android:layout_gravity="right"
         android:layout_marginTop="@dimen/padding_5"
         android:numColumns="5"
@@ -54,7 +54,7 @@
 
     <View
         android:layout_marginTop="@dimen/padding_10"
-        android:background="@color/color_333333"
+        android:background="@color/color_D0D0D0"
         android:layout_width="match_parent"
         android:layout_height="@dimen/padding_1"/>
 </LinearLayout>

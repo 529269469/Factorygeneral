@@ -14,7 +14,7 @@
             android:textColor="@color/color_333333"
             android:layout_centerVertical="true"
             android:id="@+id/et_text"
-            android:layout_marginRight="@dimen/padding_300"
+            android:layout_marginRight="@dimen/padding_100"
             android:layout_alignParentRight="true"
             android:background="@drawable/shape_ed"
             android:layout_width="600dp"

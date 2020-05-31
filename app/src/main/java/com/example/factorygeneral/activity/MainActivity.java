@@ -116,6 +116,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private FragmentTransaction transaction;
     private boolean isResume=false;
+
     @Override
     protected void onResume() {
         super.onResume();

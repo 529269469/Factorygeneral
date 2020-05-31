@@ -851,8 +851,8 @@ public class ModelFragment extends BaseFragment implements TextBoxLayout.ITextBo
 
             if (contentFileArray != null && !StringUtils.isBlank(contentFileArray[position])) {
                 String[] contentFiledel2 = contentFileArray[position].split(",");
-                boolean isDel = false;
                 for (int i = 0; i < contentFiledel2.length; i++) {
+                    boolean isDel = false;
                     String[] contentFileArray3 = contentFiledel2[i].split("@%%%@");
                     for (int j = 0; j < gridList.size(); j++) {
                         if (gridList.get(j).getText().equals(contentFileArray3[1])) {
